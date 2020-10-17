@@ -1,0 +1,153 @@
+const pageSkeleton = [
+  {
+    key: "1",
+    width: "100%",
+    height: 60,
+    marginBottom: 10,
+    flexDirection: "row",
+    children: [
+      {
+        width: 70,
+        height: 70,
+        borderRadius: 5,
+        margin: 20,
+      },
+      {
+        width: "100%",
+        height: "100%",
+        marginTop: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        flexDirection: "column",
+        children: [
+          {
+            width: "60%",
+            height: "30%",
+            marginBottom: 5,
+          },
+          {
+            width: "50%",
+            height: "20%",
+            marginBottom: 5,
+            marginTop: 1,
+          },
+          {
+            width: "50%",
+            height: "30%",
+            marginBottom: 5,
+            marginTop: 10,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: "12",
+    width: "90%",
+    height: 20,
+    marginTop: 50,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "123",
+    width: "90%",
+    height: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "124",
+    width: "90%",
+    height: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "2",
+    width: "90%",
+    height: 60,
+    marginTop: 10,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+
+  {
+    key: "19",
+    width: "100%",
+    height: 60,
+    marginBottom: 10,
+    flexDirection: "row",
+    children: [
+      {
+        width: 70,
+        height: 70,
+        borderRadius: 5,
+        margin: 20,
+      },
+      {
+        width: "100%",
+        height: "100%",
+        marginTop: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        flexDirection: "column",
+        children: [
+          {
+            width: "60%",
+            height: "30%",
+            marginBottom: 5,
+          },
+          {
+            width: "50%",
+            height: "20%",
+            marginBottom: 5,
+            marginTop: 1,
+          },
+          {
+            width: "50%",
+            height: "30%",
+            marginBottom: 5,
+            marginTop: 10,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    key: "129",
+    width: "90%",
+    height: 20,
+    marginTop: 50,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "1239",
+    width: "90%",
+    height: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "1249",
+    width: "90%",
+    height: 15,
+    marginTop: 5,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+  {
+    key: "29",
+    width: "90%",
+    height: 60,
+    marginTop: 10,
+    marginHorizontal: 20,
+    flexDirection: "column",
+  },
+];
+
+export default pageSkeleton;
