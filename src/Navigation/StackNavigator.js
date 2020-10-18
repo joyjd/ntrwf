@@ -12,6 +12,7 @@ import RentResale from "./../Modules/RentResale/RentResaleScreen";
 import ExternalProfileView from "./../Modules/UserProfile/ExternalProfileVew";
 import ForumScreen from "./../Modules/Forum/ForumScreen";
 import ForumThread from "./../Modules/Forum/ForumThread";
+import About from "./../Modules/About/About";
 
 import UserProfileScreen from "./../Modules/UserProfile/UserProfileScreen";
 import RegisterUserScreen from "./../Modules/UserProfile/RegisterUser/RegisterUserScreen";
@@ -38,6 +39,7 @@ const landingScreens = {
   MemberProfile: ExternalProfileView,
   Forum: ForumScreen,
   Discussion: ForumThread,
+  About: About,
 };
 
 const profileScreens = {

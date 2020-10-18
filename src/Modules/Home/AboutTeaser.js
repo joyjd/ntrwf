@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions, TouchableOpacity, Linking } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 import IconRenderer from "./../../Utils/IconRenderer";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 
-const AboutTeaser = () => {
+const AboutTeaser = ({ navigation }) => {
   return (
     <View style={[styles.aboutWrapper, cssUtil.shadowXX, viewUtil.viewCol]}>
       <View style={styles.textContainer}>
@@ -13,14 +13,19 @@ const AboutTeaser = () => {
         <TextLabel>Share your feedback and suggestions</TextLabel>
       </View>
       <View style={viewUtil.viewRow}>
-        <View style={[styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}>
+        <TouchableOpacity
+          onPress={() => {
+            Linking.openURL("mailto:ntrwsdeveloper@gmail.com");
+          }}
+          style={[styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}
+        >
           <IconRenderer iconFamily='MaterialIcons' iconName='mail-outline' size={20} color='#95a5a6' style={{ paddingRight: 5 }} />
           <TextLabel style={[{ color: "#FF512F" }]}>Write to NTRWF</TextLabel>
-        </View>
-        <View style={[styles.actionWrapper, viewUtil.viewRow]}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("About")} style={[styles.actionWrapper, viewUtil.viewRow]}>
           <IconRenderer iconFamily='Ionicons' iconName='ios-information-circle-outline' size={21} color='#95a5a6' style={{ paddingRight: 5 }} />
           <TextLabel style={[{ color: "#FF512F" }]}>About NTRWF</TextLabel>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

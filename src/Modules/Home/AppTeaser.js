@@ -1,24 +1,39 @@
 import React from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions, ActivityIndicator } from "react-native";
 import { SliderBox } from "react-native-image-slider-box";
+import { getOnceSnapshot } from "./../../Firebase/FirebaseActions";
 
 class AppTeaser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      images: [
-        "https://source.unsplash.com/1024x768/?nature",
-        "https://source.unsplash.com/1024x768/?water",
-        "https://source.unsplash.com/1024x768/?girl",
-        "https://source.unsplash.com/1024x768/?tree", // Network image
-      ],
+      images: [],
+      isReady: false,
     };
   }
+
+  componentDidMount() {
+    getOnceSnapshot("AppTeaser/TeaserPics").then((snapshot) => {
+      let pt = snapshot.val();
+      let newArr = [];
+      Object.keys(pt).map((key) => {
+        newArr.push(pt[key]);
+      });
+
+      this.setState({
+        images: newArr,
+        isReady: true,
+      });
+    });
+  }
+
   render() {
-    return (
+    return this.state.isReady ? (
       <View style={styles.teaserWrapper}>
-        <SliderBox images={this.state.images} />
+        <SliderBox autoplay={true} circleLoop={true} dotColor='#DD2476' inactiveDotColor='#90A4AE' images={this.state.images} />
       </View>
+    ) : (
+      <ActivityIndicator size='large' color='#831A2B' />
     );
   }
 }

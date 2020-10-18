@@ -21,7 +21,7 @@ export default class Photoslider extends Component {
           });
         }}
       >
-        <SliderBox resizeMode={"stretch"} ImageComponentStyle={{ ...this.props.customStyle }} autoplay={false} circleLoop={false} dotColor='#DD2476' inactiveDotColor='#90A4AE' parentWidth={this.state.width} images={this.state.images} onCurrentImagePressed={(index) => console.warn(`image ${index} pressed`)} />
+        <SliderBox resizeMode={"stretch"} ImageComponentStyle={{ ...this.props.customStyle }} autoplay={false} circleLoop={false} dotColor='#DD2476' inactiveDotColor='#90A4AE' parentWidth={this.state.width} images={this.state.images} />
       </View>
     );
   }

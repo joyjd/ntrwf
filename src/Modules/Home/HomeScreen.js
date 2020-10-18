@@ -31,7 +31,7 @@ class HomeScreen extends React.Component {
           <EventTeaser navigation={this.props.navigation} />
           <NewspaperStand />
           <AppTeaser />
-          <AboutTeaser />
+          <AboutTeaser navigation={this.props.navigation} />
         </ScrollView>
         <HiddenContext />
       </View>
