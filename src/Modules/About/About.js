@@ -75,7 +75,7 @@ const About = () => {
             <TextLabel style={[{ fontWeight: "bold" }]}>About The Developer : </TextLabel>
           </View>
           <View style={styles.teaserLabel}>
-            <TextLabel>The developer of this app can be reached at joydas1611@gmail.com,as well as at 8884855687 over telephone. </TextLabel>
+            <TextLabel>The developer of this app can be reached at joydas1611@gmail.com,as well as at 8884855687 over telephone.</TextLabel>
           </View>
         </ScrollView>
       </View>
