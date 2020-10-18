@@ -25,6 +25,9 @@ const textUtil = StyleSheet.create({
 });
 
 const viewUtil = StyleSheet.create({
+  disableView: {
+    opacity: 0.2,
+  },
   viewPageWrapper: {
     flex: 1,
     display: "flex",

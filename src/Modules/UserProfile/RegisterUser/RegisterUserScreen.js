@@ -1,6 +1,6 @@
 import React from "react";
 import firebase from "firebase";
-import { StyleSheet, Dimensions, View, ImageBackground, ScrollView } from "react-native";
+import { StyleSheet, Dimensions, View, ImageBackground, ScrollView, Alert, ToastAndroid } from "react-native";
 
 import TextLabel from "./../../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
@@ -12,6 +12,7 @@ import SectionPhone from "./Sections/SectionPhone";
 import SectionAddress from "./Sections/SectionAddress";
 
 import DataContext from "./../../../Context/DataContext";
+import { setLocalstorageObject, clearAll } from "./../../../AyncStorage/LocalAsyncStorage";
 
 const activeIcon = "#ffffff";
 const activeBg = "#20bf6b";
@@ -128,6 +129,9 @@ class RegisterUserScreen extends React.Component {
           });
       });
   };
+  showSuccessToast = () => {
+    ToastAndroid.showWithGravity("You are registered succesfully at NTRWF. !", ToastAndroid.LONG, ToastAndroid.CENTER);
+  };
 
   fireBasePushUserData = (userId) => {
     firebase
@@ -153,11 +157,31 @@ class RegisterUserScreen extends React.Component {
           ProfilePic: "",
           UserId: userId,
         });
+        setLocalstorageObject("NTRWF_UserCreds", {
+          Name: this.registerFormObj.Firstname.toLowerCase() + " " + this.registerFormObj.Lastname.toLowerCase(),
+          Password: this.registerFormObj.Password,
+          Email: this.registerFormObj.Email,
+          Phone: this.registerFormObj.Phone,
+          Address: this.registerFormObj.Building + ", " + this.registerFormObj.Locality,
+          ProfilePic: "",
+          UserId: userId,
+        });
+        this.setState(
+          {
+            isLoading: false,
+            loaderText: "",
+          },
+          () => {
+            this.showSuccessToast();
+            this.props.navigation.navigate("Profile");
+          }
+        );
+      })
+      .catch((er) => {
         this.setState({
           isLoading: false,
-          loaderText: "",
         });
-        this.props.navigation.navigate("Profile");
+        Alert.alert("Registration failed!", er.message);
       });
   };
 

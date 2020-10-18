@@ -53,7 +53,7 @@ class PostDiscussionWrapper extends React.Component {
   render() {
     return (
       <>
-        <Btn title='Start A New Discussion' font={20} containerStyle={{ marginTop: 10 }} buttonStyle={{ borderRadius: 10 }} onPressMethod={() => this.setState({ visibility: true })} />
+        <Btn disabled={!this.context.userLogged} title='Start A New Discussion' font={20} containerStyle={{ marginTop: 10 }} buttonStyle={{ borderRadius: 10 }} onPressMethod={() => this.setState({ visibility: true })} />
         <PostDiscussion visibility={this.state.visibility} closeMsgBox={(data) => this.closeMsgBox(data)} />
       </>
     );

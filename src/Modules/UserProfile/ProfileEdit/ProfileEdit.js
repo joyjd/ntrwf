@@ -314,6 +314,7 @@ class ProfileEdit extends React.Component {
               icon: { name: "more", color: "#17c0eb" },
               validators: [validateContent, validateLength],
               inputProps: {
+                disabled: true,
                 secureTextEntry: true,
               },
               placeholder: "Set a password..",

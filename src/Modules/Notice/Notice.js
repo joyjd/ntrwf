@@ -19,6 +19,7 @@ class Notice extends React.Component {
     this.state = {
       isReady: false,
       allNotices: [],
+      viewList: [],
     };
   }
 
@@ -39,6 +40,7 @@ class Notice extends React.Component {
         this.setState({
           isReady: true,
           allNotices: newArr.reverse(),
+          viewList: newArr.reverse(),
         });
       } else {
         this.setState({
@@ -52,13 +54,19 @@ class Notice extends React.Component {
     return (
       <Preload isLoading={!this.state.isReady} divArr={NoticeSkeleton}>
         <View style={viewUtil.viewPageWrapper}>
-          <SearchBox placeholder='Search notices...' />
+          <SearchBox search='notice' searchData={this.state.allNotices} clearText={() => this.setState({ viewList: this.state.allNotices })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search notices...' />
           <FlatList
             ListHeaderComponent={<View style={{ marginTop: 40 }} />}
+            ListFooterComponent={<View style={{ marginTop: 30 }} />}
+            ListEmptyComponent={
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TextLabel>No notices found.</TextLabel>
+              </View>
+            }
             horizontal={false}
             showsVerticalScrollIndicator={false}
             keyExtractor={(index) => index.toString()}
-            data={this.state.allNotices}
+            data={this.state.viewList}
             renderItem={({ item }) => {
               return (
                 <View style={[styles.noticeCard, cssUtil.shadowXX]}>

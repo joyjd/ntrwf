@@ -1,10 +1,11 @@
 import React from "react";
 import { Button } from "react-native-elements";
 
-const Btn = ({ title, onPressMethod, font, buttonStyle, containerStyle }) => {
+const Btn = ({ title, onPressMethod, font, buttonStyle, containerStyle, disabled }) => {
   return (
     <Button
       title={title}
+      disabled={disabled !== undefined ? disabled : false}
       raised
       onPress={() => onPressMethod()}
       linearGradientProps={{

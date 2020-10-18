@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
@@ -23,6 +23,7 @@ class MemberDirectory extends React.Component {
     this.state = {
       isReady: false,
       userDetails: [],
+      viewList: [],
     };
   }
 
@@ -40,10 +41,18 @@ class MemberDirectory extends React.Component {
           newArr.push(pt[key]);
         });
         //newArr = newArr.concat(newArr);
-        this.setState({
-          isReady: true,
-          userDetails: newArr,
-        });
+        this.setState(
+          {
+            isReady: true,
+            userDetails: newArr,
+            viewList: newArr,
+          },
+          () => {
+            if (!this.context.userLogged) {
+              Alert.alert("You are not logged in !", "Please log in to  view details of members.");
+            }
+          }
+        );
       } else {
         this.setState({
           isReady: true,
@@ -66,18 +75,23 @@ class MemberDirectory extends React.Component {
     return (
       <Preload isLoading={!this.state.isReady} divArr={MemberDirectorySkeleton}>
         <View style={viewUtil.viewPageWrapper}>
-          <SearchBox placeholder='Search by Member name...' />
+          <SearchBox search='member' searchData={this.state.userDetails} clearText={() => this.setState({ viewList: this.state.userDetails })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search by Member name...' />
 
           <FlatList
             ListHeaderComponent={<View style={{ marginTop: 40 }} />}
+            ListEmptyComponent={
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TextLabel>No members listed</TextLabel>
+              </View>
+            }
             horizontal={false}
             showsVerticalScrollIndicator={false}
             keyExtractor={(index) => index.UserId}
-            data={this.state.userDetails}
+            data={this.state.viewList}
             renderItem={({ item, index }) => {
               return (
-                <LinearGradient colors={["transparent", "#ff929226"]}>
-                  <TouchableOpacity onPress={() => this.navigateProfile(item)} style={[viewUtil.viewRow, styles.memberCard]}>
+                <LinearGradient key={index} colors={["transparent", "#ff929226"]}>
+                  <TouchableOpacity disabled={!this.context.userLogged} onPress={() => this.navigateProfile(item)} style={[viewUtil.viewRow, styles.memberCard]}>
                     <View style={styles.avatarWrapper}>
                       {item.ProfilePic !== "" ? (
                         <Avatar

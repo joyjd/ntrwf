@@ -55,7 +55,7 @@ class MsgWrapper extends React.Component {
   render() {
     return (
       <>
-        <TouchableOpacity onPress={() => this.setState({ visibility: true })} style={[this.props.actionStyle, viewUtil.viewRow]}>
+        <TouchableOpacity disabled={!this.context.userLogged} onPress={() => this.setState({ visibility: true })} style={[this.props.actionStyle, viewUtil.viewRow]}>
           {this.props.iconType === "wrapper" ? <IconRenderer iconFamily='AntDesign' iconName='wechat' size={20} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#27ae60' wrpRaised={true} wrpSpace={5} wrpHeight={30} wrpWidth={30} /> : <IconRenderer iconFamily='AntDesign' iconName='wechat' size={30} color='#27ae60' />}
 
           <TextLabel style={[{ color: "#27ae60", textDecorationLine: "underline" }, this.props.iconType === "wrapper" ? null : { paddingLeft: 5 }]}>{this.props.label}</TextLabel>

@@ -4,8 +4,26 @@ import { StatusBar } from "expo-status-bar";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 import { LinearGradient } from "expo-linear-gradient";
 import { textUtil, cssUtil } from "./../../Styles/GenericStyles";
+import Greeting from "./Greeting";
+import IconRenderer from "./../../Utils/IconRenderer";
 
 const Header = ({ title, leftButton, navigation }) => {
+  const getMainPageName = (name) => {
+    switch (name) {
+      case "Home":
+        return <IconRenderer iconFamily='Fontisto' iconName='home' size={30} color='#ffffff' style={cssUtil.iconShadow} />;
+        break;
+      case "Profile":
+        return <IconRenderer iconFamily='FontAwesome5' iconName='user-alt' size={30} color='#ffffff' style={cssUtil.iconShadow} />;
+        break;
+      case "Notifications":
+        return <IconRenderer iconFamily='Fontisto' iconName='bell-alt' size={30} color='#ffffff' style={cssUtil.iconShadow} />;
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <LinearGradient
       // Button Linear Gradient
@@ -13,10 +31,8 @@ const Header = ({ title, leftButton, navigation }) => {
     >
       <StatusBar style='light' />
       <View style={styles.header}>
-        {leftButton}
-        <View>
-          <TextLabel style={[styles.headerNameText, textUtil.semiBold]}>{title}</TextLabel>
-        </View>
+        {leftButton ? leftButton : <Greeting />}
+        <View>{title === "Home" || title === "Profile" || title === "Notifications" ? getMainPageName(title) : <TextLabel style={[styles.headerNameText, textUtil.semiBold]}>{title}</TextLabel>}</View>
       </View>
     </LinearGradient>
   );

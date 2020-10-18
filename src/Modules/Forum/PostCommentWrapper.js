@@ -59,7 +59,7 @@ class PostCommentWrapper extends React.Component {
   render() {
     return (
       <>
-        <Btn title='Post A Comment' font={20} containerStyle={{ marginTop: 10 }} buttonStyle={{ borderRadius: 10 }} onPressMethod={() => this.setState({ visibility: true })} />
+        <Btn disabled={!this.context.userLogged} title='Post A Comment' font={20} containerStyle={{ marginTop: 10 }} buttonStyle={{ borderRadius: 10 }} onPressMethod={() => this.setState({ visibility: true })} />
         <PostComment visibility={this.state.visibility} closeMsgBox={(data) => this.closeMsgBox(data)} />
       </>
     );

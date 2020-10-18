@@ -13,8 +13,8 @@ class SectionName extends React.Component {
   }
 
   getValidatedValues = (Firstname, Lastname, Password) => {
-    this.sectionFormVal["Firstname"] = Firstname;
-    this.sectionFormVal["Lastname"] = Lastname;
+    this.sectionFormVal["Firstname"] = Firstname.trim();
+    this.sectionFormVal["Lastname"] = Lastname.trim();
     this.sectionFormVal["Password"] = Password;
     return this.sectionFormVal;
   };

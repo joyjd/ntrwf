@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import { StyleSheet, View, Image, Dimensions, ActivityIndicator } from "react-native";
 import TextLabel from "../../Elements/TextLabel/TextLabel";
 
 import { viewUtil, textUtil } from "../../Styles/GenericStyles";
@@ -29,28 +29,34 @@ const EventTeaser = ({ navigation }) => {
     });
   });
 
-  return isReady ? (
+  return (
     <>
       <View style={{ paddingLeft: 15 }}>
         <TextLabel style={[textUtil.semiBold]}>UPCOMING/LATEST COMMUNITY EVENTS</TextLabel>
       </View>
       <View style={[styles.eventWrapper, viewUtil.viewCol]}>
-        <View style={styles.photoHolder}>
-          <Photoslider photo={event[0].photo} customStyle={{ borderRadius: 5 }} />
-        </View>
-        <View style={[styles.detailsHolder, viewUtil.textWrapperVw]}>
-          <TextLabel numberOfLines={2} style={[textUtil.fontBold]}>
-            {event[0].name}
-          </TextLabel>
-          <TextLabel style={[textUtil.passiveText]}>{event[0].dateRange}</TextLabel>
-        </View>
-        <View style={{ justifyContent: "flex-end", alignItems: "flex-end" }}>
-          <ReadMore onPressMethod={() => navigation.navigate("Events")} />
-        </View>
+        {isReady ? (
+          <>
+            <View style={styles.photoHolder}>
+              <Photoslider photo={event[0].photo} customStyle={{ borderRadius: 5 }} />
+            </View>
+            <View style={[styles.detailsHolder, viewUtil.textWrapperVw]}>
+              <TextLabel numberOfLines={2} style={[textUtil.fontBold]}>
+                {event[0].name}
+              </TextLabel>
+              <TextLabel style={[textUtil.passiveText]}>{event[0].date}</TextLabel>
+            </View>
+            <View style={{ justifyContent: "flex-end", alignItems: "flex-end" }}>
+              <ReadMore onPressMethod={() => navigation.navigate("Events")} />
+            </View>
+          </>
+        ) : (
+          <ActivityIndicator size='large' color='#831A2B' />
+        )}
       </View>
       <View style={styles.dummyDeck}></View>
     </>
-  ) : null;
+  );
 };
 
 export default EventTeaser;

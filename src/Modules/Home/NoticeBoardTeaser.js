@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Image, Dimensions, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Image, Dimensions, TouchableOpacity, ActivityIndicator } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 import { Icon } from "react-native-elements";
 import IconRenderer from "./../../Utils/IconRenderer";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
-import { getLatestElement } from "./../../Firebase/FirebaseActions";
+import { getLatestElement, getDataLive } from "./../../Firebase/FirebaseActions";
 
 class NoticeBoardTeaser extends React.Component {
   constructor(props) {
@@ -18,7 +18,24 @@ class NoticeBoardTeaser extends React.Component {
 
   componentDidMount() {
     this.getLatestNotice();
+    this.registerForListeningToChanges();
   }
+
+  registerForListeningToChanges = () => {
+    let noticePromise = getDataLive("Notice");
+    noticePromise.on("value", (snapshot) => {
+      let pt = snapshot.val();
+      if (pt !== null) {
+        let notArr = [];
+        Object.keys(pt).map((key) => {
+          notArr.push(pt[key]);
+        });
+        this.setState({
+          notice: notArr.reverse(),
+        });
+      }
+    });
+  };
 
   getLatestNotice = () => {
     getLatestElement("Notice").then((snapshot) => {
@@ -42,7 +59,7 @@ class NoticeBoardTeaser extends React.Component {
   };
 
   render() {
-    return this.state.isReady ? (
+    return (
       <TouchableOpacity style={[styles.noticeWrapper, cssUtil.shadowXX]} onPress={() => this.props.navigation.navigate("Notice")}>
         <View style={styles.boardLine}>
           <View>
@@ -53,26 +70,31 @@ class NoticeBoardTeaser extends React.Component {
           </View>
           <View></View>
         </View>
-        <View style={styles.boardLine}>
-          <IconRenderer iconFamily='MaterialCommunityIcons' iconName='clipboard-text' size={25} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#FF512F' wrpRaised={false} wrpSpace={10} />
-          <View style={[viewUtil.textWrapperVw, viewUtil.viewCol]}>
-            <View style={[viewUtil.textWrapperVw, styles.topMargin]}>
-              <TextLabel style={[textUtil.fontBold, textUtil.capitalize]} numberOfLines={1}>
-                {this.state.notice[0].Title.toLowerCase()}
-              </TextLabel>
-            </View>
-            <View style={[viewUtil.textWrapperVw]}>
-              <TextLabel numberOfLines={1} style={[{ fontSize: 14 }]}>
-                {this.state.notice[0].Desc}
-              </TextLabel>
+        {this.state.isReady ? (
+          <View style={styles.boardLine}>
+            <IconRenderer iconFamily='MaterialCommunityIcons' iconName='clipboard-text' size={25} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#FF512F' wrpRaised={false} wrpSpace={10} />
+            <View style={[viewUtil.textWrapperVw, viewUtil.viewCol]}>
+              <View style={[viewUtil.textWrapperVw, styles.topMargin]}>
+                <TextLabel style={[textUtil.fontBold, textUtil.capitalize]} numberOfLines={1}>
+                  {this.state.notice[0].Title.toLowerCase()}
+                </TextLabel>
+              </View>
+              <View style={[viewUtil.textWrapperVw]}>
+                <TextLabel numberOfLines={1} style={[{ fontSize: 14 }]}>
+                  {this.state.notice[0].Desc}
+                </TextLabel>
+              </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <ActivityIndicator size='large' color='#831A2B' />
+        )}
+
         <View style={{ justifyContent: "flex-end", alignItems: "flex-end", paddingRight: 20, paddingTop: 10 }}>
           <TextLabel style={[{ color: "#FF512F", textDecorationLine: "underline" }]}>View All</TextLabel>
         </View>
       </TouchableOpacity>
-    ) : null;
+    );
   }
 }
 

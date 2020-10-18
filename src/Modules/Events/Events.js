@@ -11,8 +11,9 @@ import { getOnceSnapshot } from "./../../Firebase/FirebaseActions";
 import Preload from "./../../Common/PreLoader/Preload";
 import EventSkeleton from "./Skeletons/EventSkeleton";
 import { LinearGradient } from "expo-linear-gradient";
-
+import ReadMoreToggle from "./../../Utils/ReadMoreToggle";
 import Photoslider from "./../../Utils/PhotoSlider";
+import SearchBox from "./../../Common/SearchBox/SearchBox";
 
 class Events extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class Events extends React.Component {
     this.state = {
       isReady: false,
       eventList: [],
+      viewList: [],
     };
   }
   componentDidMount() {
@@ -39,6 +41,7 @@ class Events extends React.Component {
         this.setState({
           isReady: true,
           eventList: newArr.reverse(),
+          viewList: newArr.reverse(),
         });
       } else {
         this.setState({
@@ -52,11 +55,19 @@ class Events extends React.Component {
     return (
       <Preload isLoading={!this.state.isReady} divArr={EventSkeleton}>
         <View style={viewUtil.viewPageWrapper}>
+          <SearchBox search='events' searchData={this.state.eventList} clearText={() => this.setState({ viewList: this.state.eventList })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search events by name...' />
           <FlatList
             horizontal={false}
+            ListHeaderComponent={<View style={{ marginTop: 40 }} />}
+            ListFooterComponent={<View style={{ marginTop: 30 }} />}
+            ListEmptyComponent={
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TextLabel>No events found.</TextLabel>
+              </View>
+            }
             showsVerticalScrollIndicator={false}
             keyExtractor={(index) => index.toString()}
-            data={this.state.eventList}
+            data={this.state.viewList}
             renderItem={({ item }) => {
               return (
                 <View style={[styles.eventCard, viewUtil.viewCol, cssUtil.shadowXX]}>
@@ -71,7 +82,7 @@ class Events extends React.Component {
                           <View style={{ justifyContent: "flex-end" }}>
                             <IconRenderer iconFamily='FontAwesome5' iconName='calendar-alt' size={15} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#17c0eb' wrpRaised={false} wrpSpace={5} wrpHeight={30} wrpWidth={30} />
                           </View>
-                          <TextLabel style={[{ color: "#ffffff", paddingHorizontal: 5, paddingBottom: 10, paddingTop: 20 }]}>{item.dateRange}</TextLabel>
+                          <TextLabel style={[{ color: "#ffffff", paddingHorizontal: 5, paddingBottom: 10, paddingTop: 20 }]}>{item.date}</TextLabel>
                         </View>
                       </LinearGradient>
                     </View>
@@ -86,9 +97,9 @@ class Events extends React.Component {
                         <TextLabel>{item.venue}</TextLabel>
                       </View>
                     </View>
-                  </View>
-                  <View style={{ justifyContent: "flex-end", alignItems: "flex-end" }}>
-                    <ReadMore onPressMethod={() => console.log("read more pressed")} />
+                    <View style={{ marginVertical: 10, margingHorizontal: 5 }}>
+                      <ReadMoreToggle text={item.desc} numberOfLines={1} />
+                    </View>
                   </View>
                 </View>
               );

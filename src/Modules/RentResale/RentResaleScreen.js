@@ -8,8 +8,10 @@ import Preload from "./../../Common/PreLoader/Preload";
 import { getOnceSnapshot } from "./../../Firebase/FirebaseActions";
 import MsgWrapper from "./../../Utils/MsgWrapper";
 import ReadMoreToggle from "./../../Utils/ReadMoreToggle";
+import DataContext from "./../../Context/DataContext";
 
 class RentResale extends React.Component {
+  static contextType = DataContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -46,12 +48,19 @@ class RentResale extends React.Component {
             }
           });
 
-          this.setState({
-            isReady: true,
-            rentList: rentArr,
-            resaleList: resaleArr,
-            viewList: rentArr,
-          });
+          this.setState(
+            {
+              isReady: true,
+              rentList: rentArr,
+              resaleList: resaleArr,
+              viewList: rentArr,
+            },
+            () => {
+              if (!this.context.userLogged) {
+                Alert.alert("You are not logged in !", "Please log in to view/access the details of the owners.");
+              }
+            }
+          );
         } else {
           this.setState({
             isReady: true,
@@ -144,7 +153,7 @@ class RentResale extends React.Component {
                     </View>
                   ) : null}
 
-                  <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }]}>
+                  <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }, this.context.userLogged ? null : viewUtil.disableView]}>
                     <MsgWrapper
                       key={index}
                       label='Message'
@@ -162,6 +171,7 @@ class RentResale extends React.Component {
                       receiverDetails={{ UserId: item.ItemOwnerId, userName: item.ItemOwnerName }}
                     />
                     <TouchableOpacity
+                      disabled={!this.context.userLogged}
                       onPress={() => {
                         Linking.openURL("mailto:" + item.ItemOwnerMail);
                       }}
@@ -171,6 +181,7 @@ class RentResale extends React.Component {
                       <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Write Mail</TextLabel>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      disabled={!this.context.userLogged}
                       onPress={() => {
                         Linking.openURL("tel:" + item.ItemOwnerContact);
                       }}

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
@@ -12,14 +12,17 @@ import pageSkeleton from "./Skeletons/ServiceProviderListSkeleton";
 
 import SearchBox from "./../../Common/SearchBox/SearchBox";
 import MsgWrapper from "./../../Utils/MsgWrapper";
+import DataContext from "./../../Context/DataContext";
 
 class ServiceDetailList extends React.Component {
+  static contextType = DataContext;
   constructor(props) {
     super(props);
     this.state = {
       isReady: false,
       totalServices: [],
-      blankMessage: "No provider has been registered yet for this service.",
+      viewList: [],
+      blankMessage: "No provider found.",
     };
   }
 
@@ -36,14 +39,23 @@ class ServiceDetailList extends React.Component {
         Object.keys(pt).map((key) => {
           newArr.push(pt[key]);
         });
-        this.setState({
-          isReady: true,
-          totalServices: Object.assign([], newArr.reverse()),
-        });
+        this.setState(
+          {
+            isReady: true,
+            totalServices: Object.assign([], newArr.reverse()),
+            viewList: Object.assign([], newArr.reverse()),
+          },
+          () => {
+            if (!this.context.userLogged) {
+              Alert.alert("You are not logged in !", "Please log in to view/access the details of the service providers.");
+            }
+          }
+        );
       } else {
         this.setState({
           isReady: true,
           totalServices: [],
+          viewList: [],
         });
       }
     });
@@ -53,13 +65,17 @@ class ServiceDetailList extends React.Component {
     return (
       <Preload isLoading={!this.state.isReady} divArr={pageSkeleton}>
         <View style={viewUtil.viewPageWrapper}>
-          <SearchBox placeholder='Search by Service/Provider name...' />
+          <SearchBox search='servicelist' searchData={this.state.totalServices} clearText={() => this.setState({ viewList: this.state.totalServices })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search by Service/Provider name...' />
           <FlatList
             ListHeaderComponent={<View style={{ marginTop: 40 }} />}
-            ListEmptyComponent={<TextLabel style={[{ flex: 1, justifyContent: "center", alignItems: "center", fontWeight: "bold", fontSize: 20, marginLeft: 30 }]}>{this.state.blankMessage}</TextLabel>}
+            ListEmptyComponent={
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TextLabel>{this.state.blankMessage}</TextLabel>
+              </View>
+            }
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.ServiceId}
-            data={this.state.totalServices}
+            data={this.state.viewList}
             renderItem={({ item, index }) => {
               return (
                 <View style={[styles.genreCard, viewUtil.viewCol, cssUtil.shadowXX]}>
@@ -88,7 +104,7 @@ class ServiceDetailList extends React.Component {
                     </View>
                   ) : null}
 
-                  <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }]}>
+                  <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }, this.context.userLogged ? null : viewUtil.disableView]}>
                     <MsgWrapper
                       key={index}
                       label='Message'
@@ -106,6 +122,7 @@ class ServiceDetailList extends React.Component {
                       receiverDetails={{ UserId: item.ServiceProviderId, userName: item.ServiceProviderName }}
                     />
                     <TouchableOpacity
+                      disabled={!this.context.userLogged}
                       onPress={() => {
                         Linking.openURL("mailto:" + item.ServiceProviderEmail);
                       }}
@@ -115,6 +132,7 @@ class ServiceDetailList extends React.Component {
                       <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Write Mail</TextLabel>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      disabled={!this.context.userLogged}
                       onPress={() => {
                         Linking.openURL("tel:" + item.ServiceProviderPhone);
                       }}

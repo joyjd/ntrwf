@@ -18,6 +18,7 @@ class LocalAmenities extends React.Component {
     this.state = {
       isReady: false,
       establishments: [],
+      viewList: [],
     };
   }
 
@@ -38,6 +39,7 @@ class LocalAmenities extends React.Component {
         this.setState({
           isReady: true,
           establishments: newArr,
+          viewList: newArr,
         });
       } else {
         this.setState({
@@ -50,14 +52,19 @@ class LocalAmenities extends React.Component {
     return (
       <Preload isLoading={!this.state.isReady} divArr={LASkeleton}>
         <View style={viewUtil.viewPageWrapper}>
-          <SearchBox placeholder='Search by name...' />
+          <SearchBox search='amneties' searchData={this.state.establishments} clearText={() => this.setState({ viewList: this.state.establishments })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search by name...' />
 
           <FlatList
             ListHeaderComponent={<View style={{ marginTop: 40 }} />}
+            ListEmptyComponent={
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <TextLabel>No amenities found.</TextLabel>
+              </View>
+            }
             horizontal={false}
             showsVerticalScrollIndicator={false}
             keyExtractor={(index) => index.toString()}
-            data={this.state.establishments}
+            data={this.state.viewList}
             renderItem={({ item }) => {
               return (
                 <View style={[styles.cardWrapper, viewUtil.viewCol, cssUtil.shadowXX]}>
@@ -85,7 +92,8 @@ class LocalAmenities extends React.Component {
                       }}
                       style={[styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}
                     >
-                      <IconRenderer iconFamily='MaterialIcons' iconName='location-on' size={35} color='#27ae60' style={[cssUtil.iconShadow]} />
+                      <IconRenderer iconFamily='MaterialIcons' iconName='location-on' size={30} color='#27ae60' style={[cssUtil.iconShadow]} />
+                      <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Gmap</TextLabel>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
@@ -93,7 +101,8 @@ class LocalAmenities extends React.Component {
                       }}
                       style={[styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}
                     >
-                      <IconRenderer iconFamily='MaterialIcons' iconName='mail' size={35} color='#27ae60' style={[cssUtil.iconShadow]} />
+                      <IconRenderer iconFamily='MaterialCommunityIcons' iconName='email-edit' size={30} color='#27ae60' />
+                      <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Write Mail</TextLabel>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
@@ -101,7 +110,8 @@ class LocalAmenities extends React.Component {
                       }}
                       style={[styles.actionWrapper, viewUtil.viewRow]}
                     >
-                      <IconRenderer iconFamily='FontAwesome' iconName='phone' size={35} color='#27ae60' style={[cssUtil.iconShadow]} />
+                      <IconRenderer iconFamily='FontAwesome' iconName='phone' size={30} color='#27ae60' />
+                      <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Contact</TextLabel>
                     </TouchableOpacity>
                   </View>
                 </View>

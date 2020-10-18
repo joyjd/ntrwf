@@ -19,6 +19,8 @@ import MsgScreen from "./../Modules/UserProfile/UserActions/Messages/MsgScreen";
 import SrvScreen from "./../Modules/UserProfile/UserActions/Services/SrvScreen";
 import MarketScreen from "./../Modules/UserProfile/UserActions/Market/MarketScreen";
 
+import NotificationScreen from "./../Modules/Notifications/NotificationScreen";
+
 import Header from "./../Common/Header/Header";
 import MyBackButton from "../Common/Header/MyBackButton";
 
@@ -44,6 +46,10 @@ const profileScreens = {
   Messages: MsgScreen,
   MemberServices: SrvScreen,
   Market: MarketScreen,
+};
+
+const notificationScreens = {
+  Notifications: NotificationScreen,
 };
 
 const stackCreatorFactory = (screenObj) => {
@@ -99,4 +105,28 @@ const ProfileNavigator = ({ navigation, route }) => {
   );
 };
 
-export { MainStackNavigator, ProfileNavigator };
+const NotificationNavigator = ({ navigation, route }) => {
+  if (route.state !== undefined) {
+    if (route.state.index === 0) {
+      navigation.setOptions({ tabBarVisible: true });
+    } else {
+      navigation.setOptions({ tabBarVisible: false });
+    }
+  }
+  return (
+    <Stack.Navigator
+      headerMode='screen'
+      screenOptions={{
+        header: ({ scene, previous, navigation }) => {
+          const { options } = scene.descriptor;
+          const title = options.headerTitle !== undefined ? options.headerTitle : options.title !== undefined ? options.title : scene.route.name;
+          return <Header title={title} navigation={navigation} leftButton={previous ? <MyBackButton previous={previous} onPress={navigation.goBack} /> : undefined} />;
+        },
+      }}
+    >
+      {stackCreatorFactory(notificationScreens)}
+    </Stack.Navigator>
+  );
+};
+
+export { MainStackNavigator, ProfileNavigator, NotificationNavigator };

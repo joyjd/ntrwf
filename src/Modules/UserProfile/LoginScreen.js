@@ -1,4 +1,5 @@
 import React from "react";
+import firebase from "firebase";
 import { StyleSheet, Dimensions, View, ImageBackground, Alert, Image } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 
@@ -11,21 +12,35 @@ import Btn from "./../../Elements/Button/Btn";
 import Form from "./../../Elements/Form/Form";
 import { validateContent, validateLength, validateEmail } from "./../../Elements/Validator/Validator";
 
-import { signInWithEmailAndPassword, getOnceSnapshot, getAuthorisedUser } from "./../../Firebase/FirebaseActions";
+import { signInWithEmailAndPassword, getOnceSnapshot, getAuthorisedUser, getDataByIndex } from "./../../Firebase/FirebaseActions";
 
 import Loader from "./../../Utils/Loader";
 import DataContext from "./../../Context/DataContext";
-import { setLocalstorageObject, clearAll } from "./../../AyncStorage/LocalAsyncStorage";
+import { setLocalstorageObject, getLocalstorageObject, clearAll } from "./../../AyncStorage/LocalAsyncStorage";
+import Modal from "./../../Utils/Modal";
 
 class LoginScreen extends React.Component {
   static contextType = DataContext;
   loginCreds = {};
+  forgotPwd = {};
   constructor(props) {
     super(props);
     this.state = {
       loading: false,
+      frgtPwdVisibility: false,
     };
   }
+  forgotPasswordSubmitPost = () => {
+    getDataByIndex("UserDetails", "Email", this.forgotPwd.Email).then((snapshot) => {
+      let pt = snapshot.val();
+      if (pt !== null) {
+        this.toggleOverlay();
+        this.forgotPasswordFirebase(this.forgotPwd.Email);
+      } else {
+        Alert.alert("NTRWF Password Reset", "This email is not associated with any registered account at NTRWF.Please enter your registered email address.");
+      }
+    });
+  };
 
   postSubmit = (logCreds) => {
     this.setState({
@@ -81,10 +96,32 @@ class LoginScreen extends React.Component {
   login = (email, password) => {
     this.loginCreds["email"] = email;
     this.loginCreds["password"] = password;
-
     return this.loginCreds;
   };
 
+  forgotPasswordSubmit = (Email) => {
+    this.forgotPwd["Email"] = Email;
+    return this.forgotPwd;
+  };
+
+  forgotPasswordFirebase = (email) => {
+    var auth = firebase.auth();
+    var emailAddress = email;
+
+    auth
+      .sendPasswordResetEmail(emailAddress)
+      .then((data) => {
+        Alert.alert("NTRWF Password Reset", "Password reset link has been sent to " + emailAddress + ".Please check mail for resetting your password.");
+      })
+      .catch(function (error) {
+        Alert.alert("NTRWF Password Reset", "Password reset could not be done.Please contact Admin.");
+      });
+  };
+  toggleOverlay = () => {
+    this.setState({
+      frgtPwdVisibility: !this.state.frgtPwdVisibility,
+    });
+  };
   render() {
     return (
       <>
@@ -113,7 +150,7 @@ class LoginScreen extends React.Component {
                   btnLeftEnable={true}
                   btnLeft={{
                     title: "Forgot Password?",
-                    onPressMethod: () => {},
+                    onPressMethod: () => this.toggleOverlay(),
                     btnStyle: { fontSize: 16, color: "#3e0909", fontWeight: "bold", textDecorationLine: "none" },
                   }}
                   fields={{
@@ -149,6 +186,32 @@ class LoginScreen extends React.Component {
             </View>
           </View>
         </View>
+        <>
+          <Modal visibility={this.state.frgtPwdVisibility} onCloseMethod={() => this.toggleOverlay()}>
+            <View style={{ minWidth: "85%", maxWidth: "85%" }}>
+              <Form
+                action={this.forgotPasswordSubmit}
+                afterSubmit={this.forgotPasswordSubmitPost}
+                buttonText='Submit'
+                buttonOrientation='right'
+                btnType='solid'
+                theme='dark'
+                btnLeftEnable={false}
+                fields={{
+                  Email: {
+                    label: "Registered Email Id*",
+                    validators: [validateContent, validateEmail],
+                    icon: { type: "materialicons", name: "mail", color: "#17c0eb" },
+                    inputProps: {
+                      keyboardType: "email-address",
+                    },
+                    placeholder: "Enter your registered email..",
+                  },
+                }}
+              />
+            </View>
+          </Modal>
+        </>
       </>
     );
   }

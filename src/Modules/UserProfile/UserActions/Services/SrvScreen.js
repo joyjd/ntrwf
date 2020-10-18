@@ -30,7 +30,7 @@ class SrvScreen extends React.Component {
           <TouchableOpacity onPress={() => this.setState({ viewMode: "viewSrv" })} style={[viewUtil.header, this.state.viewMode === "viewSrv" ? viewUtil.activeBar : null, cssUtil.shadowXX]}>
             <TextLabel style={[this.state.viewMode === "viewSrv" ? null : textUtil.passiveTextX]}>My Existing Services</TextLabel>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.setState({ viewMode: "registerSrv" }, () => this.showSuccessToast())} style={[viewUtil.header, this.state.viewMode === "registerSrv" ? viewUtil.activeBar : null, cssUtil.shadowXX]}>
+          <TouchableOpacity onPress={() => this.setState({ viewMode: "registerSrv" })} style={[viewUtil.header, this.state.viewMode === "registerSrv" ? viewUtil.activeBar : null, cssUtil.shadowXX]}>
             <TextLabel style={[this.state.viewMode === "registerSrv" ? null : textUtil.passiveTextX]}>Register New Service</TextLabel>
           </TouchableOpacity>
         </View>

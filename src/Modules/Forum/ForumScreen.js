@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking } from "react-native";
+import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 import Btn from "./../../Elements/Button/Btn";
@@ -11,17 +11,23 @@ import Preload from "./../../Common/PreLoader/Preload";
 import { ScrollView } from "react-native-gesture-handler";
 import PostDiscussionWrapper from "./PostDiscussionWrapper";
 import SearchBox from "./../../Common/SearchBox/SearchBox";
+import DataContext from "./../../Context/DataContext";
 
 class ForumScreen extends React.Component {
+  static contextType = DataContext;
   constructor(props) {
     super(props);
     this.state = {
       discussionList: [],
+      viewList: [],
     };
   }
 
   componentDidMount() {
     this.getDiscussionList();
+    if (!this.context.userLogged) {
+      Alert.alert("You are not logged in !", "Please log in to start a discussion or post a comment.");
+    }
   }
 
   getDiscussionList = () => {
@@ -36,6 +42,7 @@ class ForumScreen extends React.Component {
         });
         this.setState({
           discussionList: newArr.reverse(),
+          viewList: newArr.reverse(),
         });
       }
     });
@@ -43,15 +50,20 @@ class ForumScreen extends React.Component {
   render() {
     return (
       <View style={viewUtil.viewPageWrapper}>
-        <SearchBox placeholder='Search discussion topics by name...' />
+        <SearchBox search='forum' searchData={this.state.discussionList} clearText={() => this.setState({ viewList: this.state.discussionList })} getSearchResult={(resultArr) => this.setState({ viewList: resultArr })} placeholder='Search discussion topics by name...' />
 
         <FlatList
           ListHeaderComponent={<View style={{ marginVertical: 20 }} />}
           ListFooterComponent={<View style={{ marginVertical: 20 }} />}
+          ListEmptyComponent={
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <TextLabel>No discussions found</TextLabel>
+            </View>
+          }
           horizontal={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(index) => index.toString()}
-          data={this.state.discussionList}
+          data={this.state.viewList}
           renderItem={({ item, index }) => {
             return (
               <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Discussion", { discussionDetails: item })} style={[styles.forumCard, cssUtil.shadowX]}>
@@ -85,8 +97,8 @@ class ForumScreen extends React.Component {
                   <TextLabel style={[{ fontWeight: "bold", marginLeft: 3 }]}>{item.DiscComments} Comments</TextLabel>
                   <TextLabel style={[textUtil.passiveTextX]}> on this discussion.</TextLabel>
                 </View>
-                <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }]}>
-                  <TouchableOpacity onPress={() => this.props.navigation.navigate("Discussion", { discussionDetails: item, defaultOpencomment: true })} style={[{ justifyContent: "center", alignItems: "center", width: "100%", paddingVertical: 5 }, viewUtil.viewRow]}>
+                <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }, this.context.userLogged ? null : viewUtil.disableView]}>
+                  <TouchableOpacity disabled={!this.context.userLogged} onPress={() => this.props.navigation.navigate("Discussion", { discussionDetails: item, defaultOpencomment: true })} style={[{ justifyContent: "center", alignItems: "center", width: "100%", paddingVertical: 5 }, viewUtil.viewRow]}>
                     <IconRenderer iconFamily='Foundation' iconName='comment-quotes' size={30} color='#27ae60' />
 
                     <TextLabel style={[{ color: "#27ae60", textDecorationLine: "underline", marginLeft: 5 }]}>Post a comment</TextLabel>
