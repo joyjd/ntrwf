@@ -37,7 +37,7 @@ class ForumThread extends React.Component {
           });
           // console.log(newArr);
           this.setState({
-            comments: newArr.reverse(),
+            comments: newArr,
             isReady: true,
           });
         } else {

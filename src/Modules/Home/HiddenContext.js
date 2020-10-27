@@ -45,8 +45,6 @@ const HiddenContext = () => {
     });
   }, [userLogged]);
 
-  console.log("hidden executed");
-
   return null;
 };
 

@@ -156,7 +156,7 @@ class RegisterSrv extends React.Component {
                 inputProps: {
                   keyboardType: "phone-pad",
                 },
-                placeholder: "Mobile number(optional)..",
+                placeholder: "Mobile number..",
               },
               Address: {
                 label: "Service Address",

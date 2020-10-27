@@ -153,44 +153,46 @@ class RentResale extends React.Component {
                     </View>
                   ) : null}
 
-                  <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }, this.context.userLogged ? null : viewUtil.disableView]}>
-                    <MsgWrapper
-                      key={index}
-                      label='Message'
-                      actionStyle={{
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "33.3%",
-                        borderRightWidth: 1,
-                        borderRightColor: "#d2dae2",
-                        paddingVertical: 5,
-                        display: "flex",
-                        flexDirection: "row",
-                      }}
-                      iconType='solo'
-                      receiverDetails={{ UserId: item.ItemOwnerId, userName: item.ItemOwnerName }}
-                    />
-                    <TouchableOpacity
-                      disabled={!this.context.userLogged}
-                      onPress={() => {
-                        Linking.openURL("mailto:" + item.ItemOwnerMail);
-                      }}
-                      style={[styles.paddingV_5, styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}
-                    >
-                      <IconRenderer iconFamily='MaterialCommunityIcons' iconName='email-edit' size={30} color='#27ae60' />
-                      <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Write Mail</TextLabel>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      disabled={!this.context.userLogged}
-                      onPress={() => {
-                        Linking.openURL("tel:" + item.ItemOwnerContact);
-                      }}
-                      style={[styles.paddingV_5, styles.actionWrapper, viewUtil.viewRow]}
-                    >
-                      <IconRenderer iconFamily='FontAwesome' iconName='phone' size={30} color='#27ae60' />
-                      <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Contact</TextLabel>
-                    </TouchableOpacity>
-                  </View>
+                  {this.context.userDetails.UserId !== item.ItemOwnerId ? (
+                    <View style={[viewUtil.viewRow, styles.topBorder, { marginTop: 10 }, this.context.userLogged ? null : viewUtil.disableView]}>
+                      <MsgWrapper
+                        key={index}
+                        label='Message'
+                        actionStyle={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: "33.3%",
+                          borderRightWidth: 1,
+                          borderRightColor: "#d2dae2",
+                          paddingVertical: 5,
+                          display: "flex",
+                          flexDirection: "row",
+                        }}
+                        iconType='solo'
+                        receiverDetails={{ UserId: item.ItemOwnerId, userName: item.ItemOwnerName }}
+                      />
+                      <TouchableOpacity
+                        disabled={!this.context.userLogged}
+                        onPress={() => {
+                          Linking.openURL("mailto:" + item.ItemOwnerMail);
+                        }}
+                        style={[styles.paddingV_5, styles.actionWrapper, styles.rightBorder, viewUtil.viewRow]}
+                      >
+                        <IconRenderer iconFamily='MaterialCommunityIcons' iconName='email-edit' size={30} color='#27ae60' />
+                        <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Write Mail</TextLabel>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        disabled={!this.context.userLogged}
+                        onPress={() => {
+                          Linking.openURL("tel:" + item.ItemOwnerContact);
+                        }}
+                        style={[styles.paddingV_5, styles.actionWrapper, viewUtil.viewRow]}
+                      >
+                        <IconRenderer iconFamily='FontAwesome' iconName='phone' size={30} color='#27ae60' />
+                        <TextLabel style={[{ color: "#27ae60", marginLeft: 5, textDecorationLine: "underline" }]}>Contact</TextLabel>
+                      </TouchableOpacity>
+                    </View>
+                  ) : null}
                 </View>
               );
             }}

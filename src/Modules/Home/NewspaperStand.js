@@ -85,14 +85,16 @@ const NewspaperStand = () => {
           </View>
           <View style={styles.shelf3}>
             <View style={styles.partRackWhole}>
-              <ImageBackground source={require("./../../Assets/Images/paper.png")} resizeMode='stretch' style={styles.image}>
-                <Image
-                  style={{ height: 27, width: 130, marginHorizontal: 15, marginTop: 50 }}
-                  source={{
-                    uri: "http://cdn3.allindiannewspapers.com/wp-content/india-news-files/2014/01/Hindustan-Times-Newspaper-111x25.png",
-                  }}
-                ></Image>
-              </ImageBackground>
+              <OpenURLButton url={"https://bartamanpatrika.com/"}>
+                <ImageBackground source={require("./../../Assets/Images/paper.png")} resizeMode='stretch' style={styles.image}>
+                  <Image
+                    style={{ height: 27, width: 130, marginHorizontal: 15, marginTop: 50 }}
+                    source={{
+                      uri: "https://bartamanpatrika.com/images/logo.png",
+                    }}
+                  ></Image>
+                </ImageBackground>
+              </OpenURLButton>
             </View>
           </View>
         </View>
