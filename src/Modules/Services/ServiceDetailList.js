@@ -85,7 +85,7 @@ class ServiceDetailList extends React.Component {
                     </View>
                     <View style={[viewUtil.viewCol, viewUtil.textWrapperVw]}>
                       <TextLabel style={[textUtil.fontBold, { fontSize: 17 }, textUtil.capitalize]}>{item.ServiceName.toLowerCase()} </TextLabel>
-                      <TextLabel style={[{ marginTop: -5 }]}>{item.ServicePostTime}</TextLabel>
+                      <TextLabel style={[{ marginTop: -5 }]}>{new Date(Number(item.ServicePostTime)).toDateString()}</TextLabel>
                       <View style={[viewUtil.viewRow, { marginTop: 7 }]}>
                         <IconRenderer iconFamily='FontAwesome5' iconName='user-alt' size={16} color='#17c0eb' />
                         <TextLabel style={[{ marginLeft: 5 }, textUtil.capitalize]}>{item.ServiceProviderName}</TextLabel>
@@ -101,6 +101,17 @@ class ServiceDetailList extends React.Component {
                       <View>
                         <TextLabel style={[textUtil.capitalize]}>{item.ServiceAddress.toLowerCase()}</TextLabel>
                       </View>
+                      <TouchableOpacity
+                      onPress={() => {
+                        Linking.openURL("geo:0,0?q=" + item.ServiceAddress);
+                      }}
+                      style={[{backgroundColor:"#27ae60",paddingVertical:5,justifyContent:'center',alignContent:'center',borderRadius:6,marginTop:10,marginBottom:5 }, viewUtil.viewRow]}
+                    >
+                      <IconRenderer iconFamily='MaterialIcons' iconName='location-on' size={20} color='#ffffff' style={[cssUtil.iconShadow]} />
+                      <TextLabel style={[{ color: "#ffffff", marginLeft: 5, textDecorationLine: "underline" }]}>Locate with Google Maps</TextLabel>
+                    </TouchableOpacity>
+
+
                     </View>
                   ) : null}
 

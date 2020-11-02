@@ -14,6 +14,7 @@ import EditForm from "./../../../../Elements/Form/EditForm";
 import Loader from "./../../../../Utils/Loader";
 
 import SrvCategoryPicker from "./SrvCategoryPicker";
+import PhoneOTPVerifier from "./../../../../Utils/PhoneOTPVerifier";
 
 class RegisterSrv extends React.Component {
   static contextType = DataContext;
@@ -25,13 +26,18 @@ class RegisterSrv extends React.Component {
     this.state = {
       pickerError: false,
       isLoading: false,
+
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:false,
     };
   }
 
   getValidatedValues = (Title, Email, Phone, Address) => {
     this.registerServiceForm["Title"] = Title;
     this.registerServiceForm["Email"] = Email;
-    this.registerServiceForm["Phone"] = Phone;
+    
+    Phone.length === 10? this.registerServiceForm["Phone"] = "+91"+Phone:this.registerServiceForm["Phone"] = "+91"+Phone.slice(-10);
     this.registerServiceForm["Address"] = Address;
     if (this.registerServiceForm["ServiceType"] === "") {
       this.setState({
@@ -41,74 +47,105 @@ class RegisterSrv extends React.Component {
     return this.registerServiceForm;
   };
   submitServiceValues = () => {
-    console.log("error");
-    if (this.registerServiceForm["ServiceType"] !== "") {
-      if (!this.state.pickerError) {
-        this.setState({
-          pickerError: false,
-          isLoading: true,
-        });
-      } else {
-        this.setState({
-          isLoading: true,
-        });
-      }
-
-      let loc_timeStamp = new Date().getTime();
-      let loc_Date = new Date().toDateString();
-
-      setData("UserServices/" + this.context.userDetails.UserId + "_srv_" + loc_timeStamp, {
-        ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
-        ServiceTypeId: this.registerServiceForm["ServiceType"],
-        ServiceName: this.registerServiceForm["Title"],
-        ServiceProviderId: this.context.userDetails.UserId,
-        ServiceProviderName: this.context.userDetails.Name,
-        ServiceProviderPhone: this.registerServiceForm["Phone"],
-        ServiceProviderEmail: this.registerServiceForm["Email"],
-        ServiceAddress: this.registerServiceForm["Address"],
-        ServicePostTime: loc_Date,
-        ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
-        ServiceParentName: this.registerServiceForm["ServiceParentName"],
-      })
-        .then((data) => {
-          this.context.updateUserServices([
-            {
-              ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
-              ServiceTypeId: this.registerServiceForm["ServiceType"],
-              ServiceName: this.registerServiceForm["Title"],
-              ServiceProviderId: this.context.userDetails.UserId,
-              ServiceProviderName: this.context.userDetails.Name,
-              ServiceProviderPhone: this.registerServiceForm["Phone"],
-              ServiceProviderEmail: this.registerServiceForm["Email"],
-              ServiceAddress: this.registerServiceForm["Address"],
-              ServicePostTime: loc_Date,
-              ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
-              ServiceParentName: this.registerServiceForm["ServiceParentName"],
-            },
-          ]);
-          this.setState(
-            {
-              isLoading: false,
-            },
-            () => this.props.viewChange()
-          );
+    console.log(this.registerServiceForm["Phone"])
+    if(this.registerServiceForm["Phone"] === this.context.userDetails.Phone || this.state.phoneVerified){
+      if (this.registerServiceForm["ServiceType"] !== "") {
+        if (!this.state.pickerError) {
+          this.setState({
+            pickerError: false,
+            isLoading: true,
+          });
+        } else {
+          this.setState({
+            isLoading: true,
+          });
+        }
+  
+        let loc_timeStamp = new Date().getTime();
+        let loc_Date = new Date().toDateString();
+  
+        setData("UserServices/" + this.context.userDetails.UserId + "_srv_" + loc_timeStamp, {
+          ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
+          ServiceTypeId: this.registerServiceForm["ServiceType"],
+          ServiceName: this.registerServiceForm["Title"],
+          ServiceProviderId: this.context.userDetails.UserId,
+          ServiceProviderName: this.context.userDetails.Name,
+          ServiceProviderPhone: this.registerServiceForm["Phone"],
+          ServiceProviderEmail: this.registerServiceForm["Email"],
+          ServiceAddress: this.registerServiceForm["Address"],
+          ServicePostTime: loc_timeStamp,
+          ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
+          ServiceParentName: this.registerServiceForm["ServiceParentName"],
         })
-        .catch((err) => {
-          () => {
-            this.setState({
-              isLoading: false,
-            });
-            Alert.alert("Service Registration Failed !", err.message);
-          };
-        });
+          .then((data) => {
+            this.context.updateUserServices([
+              {
+                ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
+                ServiceTypeId: this.registerServiceForm["ServiceType"],
+                ServiceName: this.registerServiceForm["Title"],
+                ServiceProviderId: this.context.userDetails.UserId,
+                ServiceProviderName: this.context.userDetails.Name,
+                ServiceProviderPhone: this.registerServiceForm["Phone"],
+                ServiceProviderEmail: this.registerServiceForm["Email"],
+                ServiceAddress: this.registerServiceForm["Address"],
+                ServicePostTime: loc_timeStamp,
+                ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
+                ServiceParentName: this.registerServiceForm["ServiceParentName"],
+              },
+            ]);
+            this.setState(
+              {
+                isLoading: false,
+                otpViewer:false,
+                sendCode:false,
+                phoneVerified:false
+              },
+              () => this.props.viewChange()
+            );
+          })
+          .catch((err) => {
+            () => {
+              this.setState({
+                isLoading: false,
+              });
+              Alert.alert("Service Registration Failed !", err.message);
+            };
+          });
+      }
+    }else{
+      if (this.registerServiceForm["ServiceType"] !== ""){
+        this.setState({
+          otpViewer:true,
+          sendCode:true,
+         })
+      }
+      
     }
+    
   };
+
+  onCompleteOTPVerification = (msg)=>{
+    this.setState({
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:msg === 'success'? true:false,
+    },()=>{
+       if(msg==='success'){
+        this.submitServiceValues();
+       }else if(msg==='fail'){
+        Alert.alert("NTRWF Phone Verification Failed", "The provided phone number is not a verified contact number.Please enter a valid contact number.");
+       }
+    })
+  }
 
   render() {
     return (
       <ScrollView>
         {this.state.isLoading ? <Loader /> : null}
         <View style={styles.regCard}>
+        {this.state.otpViewer?<PhoneOTPVerifier verificationDone={(msg)=> this.onCompleteOTPVerification(msg)} sendCode={this.state.sendCode} phone={this.registerServiceForm["Phone"]}/>:null}
+
+        <View style={[this.state.otpViewer?{ display: "none" } : null]}>
           <SrvCategoryPicker
             errorText={this.state.pickerError}
             getSrvCat={(dataId, dataName) => {
@@ -156,7 +193,7 @@ class RegisterSrv extends React.Component {
                 inputProps: {
                   keyboardType: "phone-pad",
                 },
-                placeholder: "Mobile number..",
+                placeholder: "Enter contact number..",
               },
               Address: {
                 label: "Service Address",
@@ -168,12 +205,13 @@ class RegisterSrv extends React.Component {
                   blurOnSubmit: true,
                   keyboardType: "default",
                   multiline: true,
-                  numberOfLines: 3,
+                  numberOfLines: 5,
                 },
-                placeholder: "Location address of offered service (optional)",
+                placeholder: "Location address of offered service (optional).Gmap will be enabled as per your provided address..",
               },
             }}
           />
+          </View>
         </View>
       </ScrollView>
     );

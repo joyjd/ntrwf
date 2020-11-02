@@ -22,7 +22,7 @@ export const NonSelectValue = (text) => {
 };
 export const validatePhone = (text) => {
   if (text.trim().length !== 0) {
-    if (text.length != 10) {
+    if (text.length != 10 && text.length != 13) {
       return "! Must be a valid phone number.";
     }
   }

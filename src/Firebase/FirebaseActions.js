@@ -6,8 +6,14 @@ const getOnceSnapshot = (ref) => {
 const getLatestElement = (ref) => {
   return firebase.database().ref(ref).limitToLast(1).once("value");
 };
+const getLatestElementLive = (ref) => {
+  return firebase.database().ref(ref).limitToLast(1);
+};
 const getOnceSnapshotOrderBy = (ref, orderByChild) => {
   return firebase.database().ref(ref).orderByChild(orderByChild).once("value");
+};
+const getOnceSnapshotOrderByStartAt = (ref, orderByChild,startAt) => {
+  return firebase.database().ref(ref).orderByChild(orderByChild).startAt(startAt);
 };
 
 const signInWithEmailAndPassword = (id, password) => {
@@ -87,4 +93,4 @@ const uploadImage = async (uri, imageName) => {
   return ref.put(blob);
 };
 
-export { getDataLive, uploadImage, getLatestElement, getOnceSnapshotOrderBy, reAuthenticateUser, setUserPassword, setUserEmail, updateindividualKey, getDataByIndexLive, getOnceSnapshot, signInWithEmailAndPassword, getAuthorisedUser, userLogOut, getImageRef, updateKey, getDataByIndex, setData, deleteData };
+export { getOnceSnapshotOrderByStartAt,getLatestElementLive,getDataLive, uploadImage, getLatestElement, getOnceSnapshotOrderBy, reAuthenticateUser, setUserPassword, setUserEmail, updateindividualKey, getDataByIndexLive, getOnceSnapshot, signInWithEmailAndPassword, getAuthorisedUser, userLogOut, getImageRef, updateKey, getDataByIndex, setData, deleteData };

@@ -22,8 +22,8 @@
       "enableDangerousExperimentalLeanBuilds": true
     },
     "android": {
-      "package": "com.ntrwf.ntrwfapp",
-      "versionCode": 1
+      "package": "com.ntrwf.ntrwfbuddy",
+      "versionCode": 5
     }
   }
 }

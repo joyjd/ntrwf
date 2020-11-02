@@ -17,11 +17,11 @@ const TextLabel = ({ style, children, numberOfLines, attr, getNumberOfDefaultLin
   const textStyle = [styles.default, style !== undefined ? [...style] : null];
 
   return getNumberOfDefaultLines !== undefined ? (
-    <Text onTextLayout={(e) => getNumberOfDefaultLines(e.nativeEvent.lines.length)} {...attr} numberOfLines={numberOfLines} ellipsizeMode='tail' style={textStyle}>
+    <Text allowFontScaling={false} onTextLayout={(e) => getNumberOfDefaultLines(e.nativeEvent.lines.length)} {...attr} numberOfLines={numberOfLines} ellipsizeMode='tail' style={textStyle}>
       {children}
     </Text>
   ) : (
-    <Text {...attr} numberOfLines={numberOfLines} ellipsizeMode='tail' style={textStyle}>
+    <Text {...attr} allowFontScaling={false} numberOfLines={numberOfLines} ellipsizeMode='tail' style={textStyle}>
       {children}
     </Text>
   );

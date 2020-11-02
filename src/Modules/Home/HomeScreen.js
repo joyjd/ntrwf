@@ -10,8 +10,8 @@ import EventTeaser from "./EventTeaser";
 import AppTeaser from "./AppTeaser";
 import AboutTeaser from "./AboutTeaser";
 import NewspaperStand from "./NewspaperStand";
+import { setLocalstorageObject, getLocalstorageObject } from "./../..//AyncStorage/LocalAsyncStorage";
 
-import HiddenContext from "./HiddenContext";
 
 class HomeScreen extends React.Component {
   constructor() {
@@ -19,6 +19,17 @@ class HomeScreen extends React.Component {
   }
   componentDidMount() {
     //this.props.navigation.setOptions({ title: "HomeUpdated" });
+    
+  }
+
+  componentWillUnmount(){
+    console.log("unmount executed..")
+    getLocalstorageObject("NTRWF_UserCreds").then((data) => {
+      setLocalstorageObject("NTRWF_LastUsage_"+data.UserId, {
+        DateTime: new Date().getTime()
+      });
+    });
+   
   }
 
   render() {
@@ -33,7 +44,7 @@ class HomeScreen extends React.Component {
           <AppTeaser />
           <AboutTeaser navigation={this.props.navigation} />
         </ScrollView>
-        <HiddenContext />
+        
       </View>
     );
   }

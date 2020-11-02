@@ -9,11 +9,16 @@ import { viewUtil, cssUtil, textUtil } from "../Styles/GenericStyles";
 import TextLabel from "./../Elements/TextLabel/TextLabel";
 import DataContext from "./../Context/DataContext";
 
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = ({ navigation }) => {
-  const { userLogged, notificationCount } = useContext(DataContext);
+  const { 
+    userLogged,
+    msgCount,
+    srvCount } = useContext(DataContext);
   return (
+    
     <Tab.Navigator
       tabBarOptions={{
         keyboardHidesTabBar: true,
@@ -50,11 +55,11 @@ const TabNavigator = ({ navigation }) => {
       })}
     >
       <Tab.Screen name='HOME' component={MainStackNavigator} />
-      {/* <Tab.Screen name='NOTIFICATIONS' component={NotificationScreen} /> */}
-      {userLogged ? <Tab.Screen name='NOTIFICATIONS' component={NotificationNavigator} options={notificationCount > 0 ? { tabBarBadge: notificationCount } : null} /> : null}
+      {userLogged ? <Tab.Screen name='NOTIFICATIONS' component={NotificationNavigator} options={(msgCount+srvCount) > 0 ? { tabBarBadge: (msgCount+srvCount) } : null} /> : null}
 
       <Tab.Screen name='PROFILE' component={ProfileNavigator} />
     </Tab.Navigator>
+   
   );
 };
 

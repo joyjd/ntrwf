@@ -112,6 +112,9 @@ class MemberDirectory extends React.Component {
                         {item.Address.toLowerCase()}
                       </TextLabel>
                     </View>
+                    <View style={{justifyContent:"center"}}>
+                    <IconRenderer iconFamily='Entypo' iconName='chevron-right' size={20} color='#3e090959'/>
+                    </View>
                   </TouchableOpacity>
                 </LinearGradient>
               );

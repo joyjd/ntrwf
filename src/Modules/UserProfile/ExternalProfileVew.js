@@ -12,7 +12,9 @@ class ExternalProfileView extends React.Component {
     super(props);
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.props.navigation.setOptions({ title: "Member" });
+  }
   closeMsgBox = (data) => {};
   render() {
     console.log("img", this.props.route.params.userPic);

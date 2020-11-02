@@ -39,8 +39,8 @@ class Notice extends React.Component {
         //newArr = newArr.concat(newArr);
         this.setState({
           isReady: true,
-          allNotices: newArr.reverse(),
-          viewList: newArr.reverse(),
+          allNotices: newArr,
+          viewList: newArr,
         });
       } else {
         this.setState({
@@ -65,8 +65,8 @@ class Notice extends React.Component {
             }
             horizontal={false}
             showsVerticalScrollIndicator={false}
-            keyExtractor={(index) => index.toString()}
-            data={this.state.viewList}
+            keyExtractor={(index) => index.id}
+            data={this.state.viewList.reverse()}
             renderItem={({ item }) => {
               return (
                 <View style={[styles.noticeCard, cssUtil.shadowXX]}>

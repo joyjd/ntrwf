@@ -10,7 +10,7 @@ import IconRenderer from "./../../Utils/IconRenderer";
 import DataContext from "./../../Context/DataContext";
 
 import { userLogOut } from "./../../Firebase/FirebaseActions";
-import { clearAll } from "./../../AyncStorage/LocalAsyncStorage";
+import { setLocalstorageObject,removeLocalStorageObject } from "./../../AyncStorage/LocalAsyncStorage";
 import TransparentBtn from "./../../Elements/Button/TransparentBtn";
 import PhotoUploadUserWrapper from "./PhotoUploadUserWrapper";
 
@@ -111,8 +111,12 @@ class UserScreen extends React.Component {
                 </ListItem>
                 <ListItem
                   onPress={() => {
-                    clearAll();
+                    //clearAll();
+                    removeLocalStorageObject('NTRWF_UserCreds');
                     this.context.logOutUser();
+                    setLocalstorageObject("NTRWF_LastUsage_"+this.context.userDetails.UserId,{
+                      DateTime: new Date().getTime()
+                    });
                     userLogOut();
                   }}
                   bottomDivider

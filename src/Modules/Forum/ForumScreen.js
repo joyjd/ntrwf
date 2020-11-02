@@ -20,6 +20,7 @@ class ForumScreen extends React.Component {
     this.state = {
       discussionList: [],
       viewList: [],
+      isReady: false,
     };
   }
 
@@ -41,8 +42,9 @@ class ForumScreen extends React.Component {
           newArr.push(pt[key]);
         });
         this.setState({
-          discussionList: newArr.reverse(),
-          viewList: newArr.reverse(),
+          discussionList: newArr,
+          viewList: newArr,
+          isReady: true,
         });
       }
     });
@@ -56,14 +58,18 @@ class ForumScreen extends React.Component {
           ListHeaderComponent={<View style={{ marginVertical: 20 }} />}
           ListFooterComponent={<View style={{ marginVertical: 20 }} />}
           ListEmptyComponent={
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <TextLabel>No discussions found</TextLabel>
-            </View>
+            this.state.isReady ? (
+              <TextLabel style={[{ flex: 1, justifyContent: "center", alignItems: "center", fontSize: 20, marginLeft: 30, marginTop: 50 }]}>No discussions found.</TextLabel>
+            ) : (
+              <View style={[{ flex: 1, justifyContent: "center", alignItems: "center" }]}>
+                <TextLabel>Please wait...</TextLabel>
+              </View>
+            )
           }
           horizontal={false}
           showsVerticalScrollIndicator={false}
-          keyExtractor={(index) => index.toString()}
-          data={this.state.viewList}
+          keyExtractor={(index) => index.DiscId}
+          data={this.state.viewList.reverse()}
           renderItem={({ item, index }) => {
             return (
               <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Discussion", { discussionDetails: item })} style={[styles.forumCard, cssUtil.shadowX]}>

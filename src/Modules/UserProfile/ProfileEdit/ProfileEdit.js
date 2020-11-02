@@ -11,6 +11,7 @@ import DataContext from "./../../../Context/DataContext";
 import { setLocalstorageObject, clearAll } from "./../../../AyncStorage/LocalAsyncStorage";
 import EditForm from "./../../../Elements/Form/EditForm";
 import Loader from "./../../../Utils/Loader";
+import PhoneOTPVerifier from "./../../../Utils/PhoneOTPVerifier";
 
 class ProfileEdit extends React.Component {
   static contextType = DataContext;
@@ -20,6 +21,10 @@ class ProfileEdit extends React.Component {
     super(props);
     this.state = {
       isLoading: false,
+
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:false,
     };
   }
 
@@ -31,11 +36,14 @@ class ProfileEdit extends React.Component {
     this.editFormValues["Firstname"] = Firstname;
     this.editFormValues["Lastname"] = Lastname;
     this.editFormValues["Password"] = Password;
-    this.editFormValues["Phone"] = Phone;
+    Phone.length === 10?this.editFormValues["Phone"] = "+91"+Phone:this.editFormValues["Phone"] = "+91"+Phone.slice(-10);
     this.editFormValues["Address"] = Address;
     return this.editFormValues;
   };
   submitEditValues = () => {
+
+    if(this.editFormValues["Phone"] === this.context.userDetails.Phone || this.state.phoneVerified){
+
     let nameUpdateFlag = false;
     let phoneUpdateFlag = false;
     let passwordFlag = false;
@@ -213,10 +221,13 @@ class ProfileEdit extends React.Component {
                       if (passwordFlag) {
                         setUserPassword(this.editFormValues.Password).catch((er) => reAuthenticateUser(this.editFormValues.Password));
                       }
-                      //close loading
+                      //close loading..
                       this.setState(
                         {
                           isLoading: false,
+                          otpViewer:false,
+                          sendCode:false,
+                          phoneVerified:false,
                         },
                         () => this.props.onCancel()
                       );
@@ -225,6 +236,9 @@ class ProfileEdit extends React.Component {
                       this.setState(
                         {
                           isLoading: false,
+                          otpViewer:false,
+                          sendCode:false,
+                          phoneVerified:false,
                         },
                         () => this.props.onCancel()
                       );
@@ -234,6 +248,9 @@ class ProfileEdit extends React.Component {
                   this.setState(
                     {
                       isLoading: false,
+                      otpViewer:false,
+                      sendCode:false,
+                      phoneVerified:false,
                     },
                     () => this.props.onCancel()
                   );
@@ -243,6 +260,9 @@ class ProfileEdit extends React.Component {
                 this.setState(
                   {
                     isLoading: false,
+                    otpViewer:false,
+                    sendCode:false,
+                    phoneVerified:false,
                   },
                   () => this.props.onCancel()
                 );
@@ -253,6 +273,9 @@ class ProfileEdit extends React.Component {
             this.setState(
               {
                 isLoading: false,
+                otpViewer:false,
+                sendCode:false,
+                phoneVerified:false,
               },
               () => this.props.onCancel()
             );
@@ -262,18 +285,46 @@ class ProfileEdit extends React.Component {
           this.setState(
             {
               isLoading: false,
+              otpViewer:false,
+              sendCode:false,
+              phoneVerified:false,
             },
             () => this.props.onCancel()
           );
           Alert.alert("Profile-Edit Failed !", er.message);
         });
     }
+
+      }
+      else{
+        this.setState({
+            otpViewer:true,
+            sendCode:true,
+          })
+      }
+
   };
 
+
+  onCompleteOTPVerification = (msg)=>{
+    this.setState({
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:msg === 'success'? true:false,
+    },()=>{
+       if(msg==='success'){
+        this.submitEditValues();
+       }else if(msg==='fail'){
+        Alert.alert("NTRWF Phone Verification Failed", "The provided phone number is not a verified contact number.Please enter a valid contact number.");
+       }
+    })
+  }
   render() {
     return this.context.userLogged ? (
       <View style={styles.accountDetailsCard}>
         {this.state.isLoading ? <Loader loaderText={this.loaderMsg} /> : null}
+        {this.state.otpViewer?<PhoneOTPVerifier verificationDone={(msg)=> this.onCompleteOTPVerification(msg)} sendCode={this.state.sendCode} phone={ this.editFormValues["Phone"]}/>:null}
+        <View style={[this.state.otpViewer?{ display: "none" } : null]}>
         <EditForm
           action={this.getValidatedValues}
           afterSubmit={this.submitEditValues}
@@ -345,6 +396,7 @@ class ProfileEdit extends React.Component {
             },
           }}
         />
+        </View>
       </View>
     ) : null;
   }

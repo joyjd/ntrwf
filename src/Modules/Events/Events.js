@@ -40,8 +40,8 @@ class Events extends React.Component {
         //newArr = newArr.concat(newArr);
         this.setState({
           isReady: true,
-          eventList: newArr.reverse(),
-          viewList: newArr.reverse(),
+          eventList: newArr,
+          viewList: newArr,
         });
       } else {
         this.setState({
@@ -66,11 +66,11 @@ class Events extends React.Component {
               </View>
             }
             showsVerticalScrollIndicator={false}
-            keyExtractor={(index) => index.toString()}
-            data={this.state.viewList}
-            renderItem={({ item }) => {
+            keyExtractor={(index) => index.id}
+            data={this.state.viewList.reverse()}
+            renderItem={({ item,index }) => {
               return (
-                <View style={[styles.eventCard, viewUtil.viewCol, cssUtil.shadowXX]}>
+                <View key={index} style={[styles.eventCard, viewUtil.viewCol, cssUtil.shadowXX]}>
                   <View style={styles.imageWrapper}>
                     <View style={styles.imageContainer}>
                       <Photoslider photo={item.photo} customStyle={{ borderRadius: 5 }} />
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   imageWrapper: {
     marginHorizontal: 20,
     width: "90%",
-    height: 150,
+    height: 200,
     alignSelf: "center",
     borderRadius: 5,
     marginTop: -20,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     width: "90%",
     alignSelf: "center",
-    marginBottom: 15,
+    marginBottom: 5,
     marginTop: 20,
     paddingTop: 10,
   },

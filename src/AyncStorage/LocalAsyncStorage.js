@@ -37,6 +37,16 @@ export const setLocalstorageObject = async (key, data) => {
   }
 };
 
+export const removeLocalStorageObject = async (key) =>{
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (e) {
+    return "error";
+  }
+}
+
+
+
 export const clearAll = async () => {
   try {
     await AsyncStorage.clear();

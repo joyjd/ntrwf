@@ -1,16 +1,39 @@
-import React from "react";
-import { StyleSheet, Dimensions, View, ImageBackground } from "react-native";
+import React,{ useCallback } from "react";
+import { StyleSheet, Dimensions, View, ImageBackground,Alert,Linking } from "react-native";
 
 import TextLabel from "./../../../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../../../Styles/GenericStyles";
 import Form from "./../../../../Elements/Form/Form";
 import { validateContent, validateLength, validateEmail, validatePhone } from "./../../../../Elements/Validator/Validator";
+import { CheckBox } from 'react-native-elements';
+import { TouchableOpacity } from "react-native-gesture-handler";
+import * as FileSystem from 'expo-file-system';
+const  OpenURLButton = ({ url, children }) => {
+  const handlePress = useCallback(async () => {
+    // Checking if the link is supported for links with custom URL scheme.
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+      // by some browser in the mobile
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  }, [url]);
+
+  return <TouchableOpacity onPress={handlePress}>{children}</TouchableOpacity>;
+};
 
 class SectionAddress extends React.Component {
   sectionFormVal = {};
   constructor(props) {
     super(props);
+    this.state={
+      termsCheck:false,
+      showCheckError:false
+    }
   }
   getValidatedValues = (Email, Phone) => {
     this.sectionFormVal["Building"] = Email;
@@ -19,8 +42,23 @@ class SectionAddress extends React.Component {
     return this.sectionFormVal;
   };
   transmitFormVal = (datObj) => {
-    this.props.transmitData(datObj);
+    if(this.state.termsCheck){
+      this.props.transmitData(datObj);
+    }else{
+     this.setState({
+      showCheckError : true
+     })
+    }
+   
   };
+ showTermsConditions = ()=>{
+  Alert.alert("NTRWF Terms & Conditions", <TextLabel>test</TextLabel>)
+
+ 
+ }
+
+
+
 
   render() {
     return (
@@ -69,16 +107,32 @@ class SectionAddress extends React.Component {
             },
           }}
         />
+        <CheckBox
+          containerStyle ={[{marginTop:-20},this.state.showCheckError?styles.errorCheck:null]}
+          title={<View style={[viewUtil.viewRow]}><TextLabel>I have read </TextLabel><OpenURLButton url={"https://github.com/joyjd/ntrwfPics/blob/main/Terms_and_Conditions.pdf?raw=true"}><TextLabel style={[{textDecorationLine: "underline"}]}>Terms & Conditions</TextLabel></OpenURLButton></View>}
+          checked={this.state.termsCheck}
+          onIconPress = {()=> this.setState({termsCheck : !this.state.termsCheck,showCheckError:false})}
+          
+        />
+        {this.state.showCheckError? <TextLabel style={[{paddingLeft:10, fontSize: 16, color: "#b71540" }]}>* Please accept terms to register.</TextLabel>:null}
+        
+        <View style={{marginVertical:15}}>
         <TextLabel>* Fields cannot be blank.</TextLabel>
+        </View>
+        
       </View>
     );
   }
 }
 const styles = StyleSheet.create({
+  errorCheck:{
+   borderColor:'red'
+  },
   regCard: {
     backgroundColor: "#ffffff",
     borderRadius: 5,
-    marginVertical: 15,
+    marginTop: 15,
+    marginBottom:90,
     marginHorizontal: 15,
     paddingHorizontal: 15,
     paddingTop: 20,

@@ -24,7 +24,7 @@ import NotificationScreen from "./../Modules/Notifications/NotificationScreen";
 
 import Header from "./../Common/Header/Header";
 import MyBackButton from "../Common/Header/MyBackButton";
-
+import HiddenContext from "./../Modules/Home/HiddenContext";
 const Stack = createStackNavigator();
 
 const landingScreens = {
@@ -69,6 +69,8 @@ const MainStackNavigator = ({ navigation, route }) => {
     }
   }
   return (
+    <>
+    <HiddenContext />
     <Stack.Navigator
       headerMode='screen'
       screenOptions={{
@@ -81,6 +83,7 @@ const MainStackNavigator = ({ navigation, route }) => {
     >
       {stackCreatorFactory(landingScreens)}
     </Stack.Navigator>
+    </>
   );
 };
 const ProfileNavigator = ({ navigation, route }) => {

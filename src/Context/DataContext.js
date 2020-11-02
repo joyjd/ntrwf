@@ -35,15 +35,32 @@ export const DataContextProvider = ({ children }) => {
 
   const [receivedMessages, setReceivedMessages] = useState([]);
   const [sentMessages, setSentMessages] = useState([]);
-
-  const [notificationCount, setNotificationCount] = useState(0); // this is mail notification count
+  
+  const [msgCount, setMsgCount] = useState(0);
+  const [srvCount, setSrvCount] = useState(0);
+ 
 
   const [serviceCatalogue, setServiceCatalogue] = useState([]);
   const [iconList, setIconList] = useState({});
 
-  const updateNotificationCount = (count) => {
-    setNotificationCount(notificationCount + count);
-  };
+  const [newServices,setNewServices] = useState([]);
+  
+
+  const updateNewServices = (srv)=>{
+     
+     setNewServices([...srv]) // Fix it
+    
+  }
+  const updateMsgCount = (count)=>{
+    setMsgCount(count);
+    
+  }
+  const updateSrvCount = (count)=>{
+    setSrvCount(count);
+   
+  }
+  
+  
 
   const changeUserStatus = (flag, userObj) => {
     setUserLogged(flag);
@@ -56,6 +73,10 @@ export const DataContextProvider = ({ children }) => {
     setUserServices([]);
     setServiceCatalogue([]);
     setIconList({});
+    setReceivedMessages([]);
+    setSentMessages([]);
+    setMsgCount(0);
+    setSrvCount(0);
   };
 
   const updateReceivedMessages = (arr) => {
@@ -92,7 +113,11 @@ export const DataContextProvider = ({ children }) => {
     iconList,
     receivedMessages,
     sentMessages,
-    notificationCount,
+    
+    msgCount,
+    srvCount,
+    newServices,
+    
     changeUserStatus,
     updateUserServices,
     updateUserServicesblob,
@@ -101,7 +126,10 @@ export const DataContextProvider = ({ children }) => {
     logOutUser,
     updateSentMessages,
     updateReceivedMessages,
-    updateNotificationCount,
+    updateMsgCount,
+    updateSrvCount,
+    updateNewServices,
+    
   };
 
   return <DataContext.Provider value={actionObjects}>{children}</DataContext.Provider>;

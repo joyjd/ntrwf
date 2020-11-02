@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Dimensions, View, TouchableOpacity, FlatList, Alert } from "react-native";
+import { StyleSheet, Dimensions, View, TouchableOpacity, FlatList, Alert,ToastAndroid } from "react-native";
 
 import TextLabel from "../../../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
@@ -12,6 +12,7 @@ import { getDataByIndex, getOnceSnapshot, deleteData, setData } from "./../../..
 import { validateContent, validateLength, validateEmail, validatePhone } from "./../../../../Elements/Validator/Validator";
 import EditForm from "./../../../../Elements/Form/EditForm";
 import Loader from "./../../../../Utils/Loader";
+import PhoneOTPVerifier from "./../../../../Utils/PhoneOTPVerifier";
 
 class ViewSrv extends React.Component {
   static contextType = DataContext;
@@ -23,6 +24,10 @@ class ViewSrv extends React.Component {
       isLoading: false,
       editMode: false,
       selectedIndex: null,
+
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:false,
     };
   }
   componentDidMount() {
@@ -86,7 +91,9 @@ class ViewSrv extends React.Component {
         },
         {
           text: "Delete",
-          onPress: () => this.submitDeleteService(id),
+          onPress: () => this.setState({
+            isLoading: true,
+          },()=>this.submitDeleteService(id)),
         },
       ],
       { cancelable: true }
@@ -94,8 +101,19 @@ class ViewSrv extends React.Component {
   };
 
   submitDeleteService = (id) => {
+    
     deleteData("UserServices/" + this.context.userServices[id]["ServiceId"]).then((data) => {
       this.context.updateUserServicesblob(id);
+      this.setState({
+        isLoading: false,
+      },()=>
+      ToastAndroid.showWithGravity(
+        "Your service has been deleted !",
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER,
+        
+      )
+      );
     });
   };
 
@@ -103,11 +121,13 @@ class ViewSrv extends React.Component {
     this.editServiceValues["ServiceAddress"] = ServiceAddress;
     this.editServiceValues["ServiceName"] = ServiceName;
     this.editServiceValues["ServiceProviderEmail"] = ServiceProviderEmail;
-    this.editServiceValues["ServiceProviderPhone"] = ServiceProviderPhone;
+    ServiceProviderPhone.length === 10? this.editServiceValues["ServiceProviderPhone"] = "+91"+ServiceProviderPhone:this.editServiceValues["ServiceProviderPhone"] = "+91"+ServiceProviderPhone.slice(-10);
     return this.editServiceValues;
   };
 
   submitEditServiceValues = () => {
+    console.log(this.editServiceValues["ServiceProviderPhone"])
+    if(this.editServiceValues["ServiceProviderPhone"] === this.context.userDetails.Phone || this.state.phoneVerified){
     this.setState({
       isLoading: true,
     });
@@ -143,6 +163,9 @@ class ViewSrv extends React.Component {
         this.setState({
           isLoading: false,
           editMode: false,
+          otpViewer:false,
+          sendCode:false,
+          phoneVerified:false
         });
       })
       .catch((er) => {
@@ -153,7 +176,28 @@ class ViewSrv extends React.Component {
           () => Alert.alert("Update failed!", er.message)
         );
       });
+    }else{
+      
+      this.setState({
+        otpViewer:true,
+        sendCode:true,
+       });
+    }
   };
+
+  onCompleteOTPVerification = (msg)=>{
+    this.setState({
+      otpViewer:false,
+      sendCode:false,
+      phoneVerified:msg === 'success'? true:false,
+    },()=>{
+       if(msg==='success'){
+        this.submitEditServiceValues();
+       }else if(msg==='fail'){
+        Alert.alert("NTRWF Phone Verification Failed", "The provided phone number is not a verified contact number.Please enter a valid contact number.");
+       }
+    })
+  }
 
   render() {
     return (
@@ -161,6 +205,9 @@ class ViewSrv extends React.Component {
         {this.state.editMode ? (
           <View style={styles.genreCard}>
             {this.state.isLoading ? <Loader loaderText='Updating values..' /> : null}
+            
+            {this.state.otpViewer?<PhoneOTPVerifier verificationDone={(msg)=> this.onCompleteOTPVerification(msg)} sendCode={this.state.sendCode} phone={this.editServiceValues["ServiceProviderPhone"]}/>:null}
+            <View style={[this.state.otpViewer?{ display: "none" } : null]}>
             <EditForm
               action={this.getValidatedValues}
               afterSubmit={this.submitEditServiceValues}
@@ -216,12 +263,13 @@ class ViewSrv extends React.Component {
                     blurOnSubmit: true,
                     keyboardType: "default",
                     multiline: true,
-                    numberOfLines: 3,
+                    numberOfLines: 5,
                   },
-                  placeholder: "Location address of offered service (optional)",
+                  placeholder: "Location address of offered service (optional).Gmap will be enabled as per your provided address..",
                 },
               }}
             />
+            </View>
           </View>
         ) : (
           <>
@@ -251,7 +299,7 @@ class ViewSrv extends React.Component {
                           </TextLabel>
                         </View>
                         <TextLabel style={[textUtil.fontBold, { fontSize: 17 }, textUtil.capitalize]}>{item.ServiceName.toLowerCase()}</TextLabel>
-                        <TextLabel style={[{ marginTop: -5 }]}>{item.ServicePostTime}</TextLabel>
+                        <TextLabel style={[{ marginTop: -5 }]}>{new Date(Number(item.ServicePostTime)).toDateString()}</TextLabel>
                         {item.ServiceProviderPhone !== "" ? (
                           <View style={[viewUtil.viewRow, { marginTop: 5 }]}>
                             <IconRenderer iconFamily='Entypo' iconName='old-phone' size={18} color='#17c0eb' />
@@ -329,7 +377,8 @@ const styles = StyleSheet.create({
   genreCard: {
     backgroundColor: "#ffffff",
     borderRadius: 5,
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom:50,
     marginHorizontal: 10,
     marginBottom: 15,
     paddingTop: 5,

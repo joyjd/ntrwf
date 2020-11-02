@@ -1,17 +1,61 @@
 import React, { useContext, useEffect } from "react";
 import DataContext from "./../../Context/DataContext";
 import { getLocalstorageObject } from "./../../AyncStorage/LocalAsyncStorage";
-import { getDataByIndexLive } from "./../../Firebase/FirebaseActions";
+import { getDataByIndexLive,getDataLive,getLatestElementLive,getOnceSnapshotOrderByStartAt } from "./../../Firebase/FirebaseActions";
+
 
 const HiddenContext = () => {
-  const { userLogged, userDetails, changeUserStatus, updateReceivedMessages, updateSentMessages, updateNotificationCount } = useContext(DataContext);
+  const { 
+    userLogged, 
+    userDetails, 
+    changeUserStatus, 
+    newServices,
+    updateReceivedMessages, 
+    updateSentMessages, 
+    updateMsgCount,
+    updateSrvCount,
+    updateNewServices,
+     } = useContext(DataContext);
+
+    
   useEffect(() => {
     getLocalstorageObject("NTRWF_UserCreds").then((data) => {
       if (data !== null) {
+         console.log("useEffect ran....")
         changeUserStatus(true, data);
         //update for notifications
+        
         let rcvMailPromise = getDataByIndexLive("Messages", "ReceiverId", data.UserId);
         let sentMailPromise = getDataByIndexLive("Messages", "SenderId", data.UserId);
+        let servicePromise;
+        getLocalstorageObject("NTRWF_LastUsage_"+data.UserId).then((data) => {
+          let lastActiveTime;
+          
+          if(data !== null){
+            lastActiveTime = data.DateTime;
+          }else{
+            lastActiveTime = new Date().getTime();
+          }
+          servicePromise = getOnceSnapshotOrderByStartAt("UserServices","ServicePostTime",lastActiveTime);
+           //service added,modified or deleted
+            //add new srvices
+            servicePromise.on('value',(snapshot) => {
+              let pt = snapshot.val();
+              let srvArr = [];
+              if (pt !== null) {
+              Object.keys(pt).map((key) => {
+                srvArr.push(pt[key]);
+              });
+             
+            }
+            updateNewServices(srvArr);
+            updateSrvCount(srvArr.length);
+            console.log("srv",srvArr)
+            });
+          
+       });
+        
+
         rcvMailPromise.on("value", (snapshot) => {
           let pt = snapshot.val();
           //   /alert("value updates");
@@ -25,7 +69,8 @@ const HiddenContext = () => {
               }
             });
             updateReceivedMessages(newArr.reverse());
-            updateNotificationCount(notfCount);
+            updateMsgCount(notfCount);
+            
           } else {
           }
         });
@@ -41,9 +86,14 @@ const HiddenContext = () => {
           } else {
           }
         });
+
+       
+      
       }
     });
   }, [userLogged]);
+ 
+
 
   return null;
 };
