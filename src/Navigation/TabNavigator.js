@@ -16,6 +16,9 @@ const TabNavigator = ({ navigation }) => {
   const { 
     userLogged,
     msgCount,
+    forumCount,
+    marketCount,
+    setNotificationTouched,
     srvCount } = useContext(DataContext);
   return (
     
@@ -55,7 +58,7 @@ const TabNavigator = ({ navigation }) => {
       })}
     >
       <Tab.Screen name='HOME' component={MainStackNavigator} />
-      {userLogged ? <Tab.Screen name='NOTIFICATIONS' component={NotificationNavigator} options={(msgCount+srvCount) > 0 ? { tabBarBadge: (msgCount+srvCount) } : null} /> : null}
+      {userLogged ? <Tab.Screen name='NOTIFICATIONS' listeners={{    tabPress: e => { setNotificationTouched(true)}}} component={NotificationNavigator} options={(msgCount+srvCount+forumCount+marketCount) > 0 ? { tabBarBadge: (msgCount+srvCount+forumCount+marketCount) } : null} /> : null}
 
       <Tab.Screen name='PROFILE' component={ProfileNavigator} />
     </Tab.Navigator>

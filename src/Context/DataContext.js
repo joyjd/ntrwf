@@ -38,28 +38,47 @@ export const DataContextProvider = ({ children }) => {
   
   const [msgCount, setMsgCount] = useState(0);
   const [srvCount, setSrvCount] = useState(0);
- 
+  const [forumCount,setForumCount] = useState(0);
+  const [marketCount,setMarketCount] = useState(0);
 
   const [serviceCatalogue, setServiceCatalogue] = useState([]);
   const [iconList, setIconList] = useState({});
 
   const [newServices,setNewServices] = useState([]);
-  
+  const [pushNotificationToken,setPushNotificationToken] = useState(null);
+
+  const [notificationTouched,setNotificationTouched] = useState(false)
+
+  const [forumNews, setForumNews] = useState([]);
+  const [marketNews,setMarketNews] = useState([]);
 
   const updateNewServices = (srv)=>{
-     
      setNewServices([...srv]) // Fix it
-    
   }
+  const updateForumNews = (forum)=>{
+    setForumNews([...forum]);
+  }
+
+  const updateMarketNews = (market)=>{
+    setMarketNews([...market]);
+  }
+
   const updateMsgCount = (count)=>{
     setMsgCount(count);
     
   }
   const updateSrvCount = (count)=>{
     setSrvCount(count);
-   
+    setNotificationTouched(false);
   }
-  
+  const updateForumCount = (count) =>{
+    setForumCount(count);
+    setNotificationTouched(false);
+  }
+  const updateMarketCount = (count) =>{
+    setMarketCount(count);
+    setNotificationTouched(false);
+  }
   
 
   const changeUserStatus = (flag, userObj) => {
@@ -77,14 +96,16 @@ export const DataContextProvider = ({ children }) => {
     setSentMessages([]);
     setMsgCount(0);
     setSrvCount(0);
+    setForumCount(0);
+    setMarketCount(0);
   };
 
   const updateReceivedMessages = (arr) => {
-    setReceivedMessages([...arr, ...receivedMessages]);
+    setReceivedMessages([...arr]);
   };
 
   const updateSentMessages = (arr) => {
-    setSentMessages([...arr, ...receivedMessages]);
+    setSentMessages([...arr]);
   };
 
   const updateUserServices = (obj) => {
@@ -113,11 +134,15 @@ export const DataContextProvider = ({ children }) => {
     iconList,
     receivedMessages,
     sentMessages,
-    
+    pushNotificationToken,
     msgCount,
     srvCount,
     newServices,
-    
+    notificationTouched,
+    forumNews,
+    forumCount,
+    marketNews,
+    marketCount,
     changeUserStatus,
     updateUserServices,
     updateUserServicesblob,
@@ -129,7 +154,12 @@ export const DataContextProvider = ({ children }) => {
     updateMsgCount,
     updateSrvCount,
     updateNewServices,
-    
+    setPushNotificationToken,
+    setNotificationTouched,
+    updateForumNews,
+    updateForumCount,
+    updateMarketNews,
+    updateMarketCount
   };
 
   return <DataContext.Provider value={actionObjects}>{children}</DataContext.Provider>;

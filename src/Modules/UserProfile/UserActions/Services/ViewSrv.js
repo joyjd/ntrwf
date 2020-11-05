@@ -13,6 +13,8 @@ import { validateContent, validateLength, validateEmail, validatePhone } from ".
 import EditForm from "./../../../../Elements/Form/EditForm";
 import Loader from "./../../../../Utils/Loader";
 import PhoneOTPVerifier from "./../../../../Utils/PhoneOTPVerifier";
+import {DocRemover} from "./../../../../Utils/DocUploader";
+import CertificateRibbon from "./../../../../Utils/CertificateRibbon";
 
 class ViewSrv extends React.Component {
   static contextType = DataContext;
@@ -101,7 +103,7 @@ class ViewSrv extends React.Component {
   };
 
   submitDeleteService = (id) => {
-    
+    DocRemover("services/validationDocs/"+this.context.userServices[id]["ServiceId"]);
     deleteData("UserServices/" + this.context.userServices[id]["ServiceId"]).then((data) => {
       this.context.updateUserServicesblob(id);
       this.setState({
@@ -290,6 +292,7 @@ class ViewSrv extends React.Component {
               renderItem={({ item, index }) => {
                 return (
                   <View key={index} style={[styles.genreCard, viewUtil.viewCol, cssUtil.shadowXX]}>
+                    <CertificateRibbon verify={item.ServiceVerified} date={item.ServicePostTime}/>
                     <View style={[viewUtil.viewRow, { paddingHorizontal: 10, paddingVertical: 5 }]}>
                       <View style={styles.iconPicHolder}>{Object.keys(this.context.iconList).length === 0 ? null : <IconRenderer iconFamily={this.context.iconList[item.ServiceTypeId].iconFamily} iconName={this.context.iconList[item.ServiceTypeId].icon} size={40} color='#e67e22' style={cssUtil.iconShadow} />}</View>
                       <View style={[viewUtil.viewCol, viewUtil.textWrapperVw]}>
@@ -299,7 +302,7 @@ class ViewSrv extends React.Component {
                           </TextLabel>
                         </View>
                         <TextLabel style={[textUtil.fontBold, { fontSize: 17 }, textUtil.capitalize]}>{item.ServiceName.toLowerCase()}</TextLabel>
-                        <TextLabel style={[{ marginTop: -5 }]}>{new Date(Number(item.ServicePostTime)).toDateString()}</TextLabel>
+                        
                         {item.ServiceProviderPhone !== "" ? (
                           <View style={[viewUtil.viewRow, { marginTop: 5 }]}>
                             <IconRenderer iconFamily='Entypo' iconName='old-phone' size={18} color='#17c0eb' />

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Dimensions, ScrollView, TouchableOpacity,AppState } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 
@@ -10,27 +10,31 @@ import EventTeaser from "./EventTeaser";
 import AppTeaser from "./AppTeaser";
 import AboutTeaser from "./AboutTeaser";
 import NewspaperStand from "./NewspaperStand";
-import { setLocalstorageObject, getLocalstorageObject } from "./../..//AyncStorage/LocalAsyncStorage";
+import { setLocalstorageObject, getLocalstorageObject } from "./../../AyncStorage/LocalAsyncStorage";
+import PushRegister from "./../../Common/PushNotification/PushRegister";
+import PromiseRegisterList from "./PromiseRegisterList";
 
 
 class HomeScreen extends React.Component {
+  
   constructor() {
     super();
+    
   }
   componentDidMount() {
     //this.props.navigation.setOptions({ title: "HomeUpdated" });
-    
+   
   }
 
   componentWillUnmount(){
     console.log("unmount executed..")
-    getLocalstorageObject("NTRWF_UserCreds").then((data) => {
-      setLocalstorageObject("NTRWF_LastUsage_"+data.UserId, {
-        DateTime: new Date().getTime()
-      });
+    setLocalstorageObject("NTRWF_LastUsage", {
+      DateTime: new Date().getTime()
     });
    
   }
+
+
 
   render() {
     return (
@@ -43,6 +47,8 @@ class HomeScreen extends React.Component {
           <NewspaperStand />
           <AppTeaser />
           <AboutTeaser navigation={this.props.navigation} />
+          <PushRegister navigation={this.props.navigation}/>
+          <PromiseRegisterList/>
         </ScrollView>
         
       </View>

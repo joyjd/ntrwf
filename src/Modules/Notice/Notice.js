@@ -8,7 +8,7 @@ import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 
 import IconRenderer from "./../../Utils/IconRenderer";
 import ReadMoreNotice from "./ReadMoreNotice";
-import { getOnceSnapshot } from "./../../Firebase/FirebaseActions";
+import { getDataLive } from "./../../Firebase/FirebaseActions";
 import Preload from "./../../Common/PreLoader/Preload";
 import SearchBox from "./../../Common/SearchBox/SearchBox";
 import NoticeSkeleton from "./Skeletons/Skeleton";
@@ -29,7 +29,7 @@ class Notice extends React.Component {
   }
 
   getAllNotices = () => {
-    getOnceSnapshot("Notice").then((snapshot) => {
+    getDataLive("Notice").on("value",(snapshot) => {
       let pt = snapshot.val();
       if (pt !== null) {
         let newArr = [];
@@ -80,7 +80,7 @@ class Notice extends React.Component {
 
                     <View style={[viewUtil.viewRow, { alignItems: "center" }]}>
                       <IconRenderer iconFamily='FontAwesome5' iconName='calendar-alt' size={10} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#17c0eb' wrpRaised={false} wrpSpace={5} wrpHeight={20} wrpWidth={20} />
-                      <TextLabel style={[textUtil.passiveText]}>{item.Postdate}</TextLabel>
+                      <TextLabel style={[textUtil.passiveText]}>{new Date(Number(item.Postdate)).toDateString()}</TextLabel>
                     </View>
                     <View>
                       <TextLabel numberOfLines={2} style={[{ paddingHorizontal: 5 }]}>

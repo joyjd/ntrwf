@@ -39,11 +39,13 @@ class PostDiscussionWrapper extends React.Component {
       DiscDesc: data.DiscDesc,
       DiscOwnerId: this.context.userDetails.UserId,
       DiscOwnerName: this.context.userDetails.Name,
-      DiscDate: dateStr,
+      DiscDate: timestamp,
       DiscComments: 0,
     })
-      .then((data) => {
+      .then((dataResp) => {
         this.showSuccessToast();
+        
+        
       })
       .catch((er) => {
         Alert.alert("Message sending failed !", "Message was not sent.Please try again in sometime.");

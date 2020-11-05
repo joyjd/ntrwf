@@ -17,7 +17,7 @@ class ReceivedMsg extends React.Component {
     return (
       <>
         <FlatList
-          ListFooterComponent={<View style={{ marginVertical: 20 }}></View>}
+          ListFooterComponent={<View style={{ marginVertical: 40 }}></View>}
           horizontal={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(index) => index.MessageId}

@@ -99,7 +99,7 @@ class MarketList extends React.Component {
                   </View>
                   <View style={[viewUtil.viewRow]}>
                     <IconRenderer iconFamily='Fontisto' iconName='date' size={18} color='#17c0eb' />
-                    <TextLabel style={[{ paddingLeft: 5 }]}>{item.ItemPostDate}</TextLabel>
+                    <TextLabel style={[{ paddingLeft: 5 }]}>{new Date(Number(item.ItemPostDate)).toDateString()}</TextLabel>
                   </View>
                 </View>
                 <View style={[styles.paddingH_15, { paddingTop: 5 }]}>

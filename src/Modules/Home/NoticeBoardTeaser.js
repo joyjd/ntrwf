@@ -6,8 +6,11 @@ import IconRenderer from "./../../Utils/IconRenderer";
 const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 import { getLatestElement, getDataLive } from "./../../Firebase/FirebaseActions";
+import DataContext from "./../../Context/DataContext";
+import { addPushTokenListener } from "expo-notifications";
 
 class NoticeBoardTeaser extends React.Component {
+  static contextType = DataContext;
   constructor(props) {
     super(props);
     this.state = {
@@ -17,13 +20,67 @@ class NoticeBoardTeaser extends React.Component {
   }
 
   componentDidMount() {
-    this.getLatestNotice();
-    this.registerForListeningToChanges();
+   this.registerForListeningToChanges();
+   this.registerForServiceAdd();
+  //this.registerForForumChanges();
+  // this.registerForMarketChanges();
+  }
+
+  
+  sendNotification = (message)=>{
+    console.log("inside sendNotification");
+    fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+  registerForServiceAdd = ()=>{
+    let srvPromise = getDataLive("UserServices").startAt(new Date().getTime()).orderByChild('ServicePostTime').limitToLast(1);
+    srvPromise.on("child_added", (snapshot) => {
+      console.log("inside child aded ===========")
+      let pt = snapshot.val();
+      let srvArr = [];
+      if (pt !== null) {
+             /*  Object.keys(pt).map((key) => {
+                srvArr.push(pt[key]);
+      }); */
+      srvArr.push(pt)
+    }
+    
+      if(srvArr.length === 1){
+        let pushSrvNotificationMessage = {
+          to: this.context.pushNotificationToken,
+          sound: 'default',
+          title: 'NTRWF - New Service Added !',
+          body: srvArr[0].ServiceProviderName.toUpperCase() +' added '+ srvArr[0].ServiceName.toUpperCase() +'  under '+srvArr[0].ServiceParentName +' > '+ srvArr[0].ServiceTypeName,
+          data: { 
+            navigationLink: 'ServiceDetailList',
+            paramNav:{ 
+              srvId: srvArr[0].ServiceTypeId, 
+              srvName: srvArr[0].ServiceTypeName,
+               icon: { 
+                 iconName: "", 
+                 iconFamily: "" 
+                } 
+            }
+          },
+      }; 
+      if(pushSrvNotificationMessage.to !== null){
+        this.sendNotification(pushSrvNotificationMessage); 
+      }
+      }
+    });
   }
 
   registerForListeningToChanges = () => {
-    let noticePromise = getDataLive("Notice");
-    noticePromise.on("value", (snapshot) => {
+    let noticePromise = getDataLive("Notice").startAt(new Date().getTime()).orderByChild('Postdate').limitToLast(1);
+    let noticePromiseView = getDataLive("Notice").limitToLast(1);
+    noticePromiseView.on("value", (snapshot) => {
       let pt = snapshot.val();
       if (pt !== null) {
         let notArr = [];
@@ -31,32 +88,42 @@ class NoticeBoardTeaser extends React.Component {
           notArr.push(pt[key]);
         });
         this.setState({
+          isReady: true,
           notice: notArr.reverse(),
         });
+
+      }
+    });
+
+
+    noticePromise.on("value",(snapshot)=>{
+      let ptNot = snapshot.val();
+      if(ptNot !== null) {
+        let notNotArr = [];
+        Object.keys(ptNot).map((key) => {
+          notNotArr.push(ptNot[key]);
+        });
+    
+        let pushNoticeMessage = {
+            to: this.context.pushNotificationToken,
+            sound: 'default',
+            title: "NTRWF - New Notice announced!",
+            body: notNotArr[0].Title.toLowerCase(),
+            data: { 
+              navigationLink: "Notice",
+             },
+        };
+        if(pushNoticeMessage.to !== null){
+          this.sendNotification(pushNoticeMessage); 
+        }
       }
     });
   };
 
-  getLatestNotice = () => {
-    getLatestElement("Notice").then((snapshot) => {
-      let pt = snapshot.val();
-      if (pt !== null) {
-        let newArr = [];
-        Object.keys(pt).map((key) => {
-          newArr.push(pt[key]);
-        });
-        //newArr = newArr.concat(newArr);
-        this.setState({
-          isReady: true,
-          notice: newArr,
-        });
-      } else {
-        this.setState({
-          isReady: true,
-        });
-      }
-    });
-  };
+
+
+
+
 
   render() {
     return (

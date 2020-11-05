@@ -7,7 +7,7 @@ const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 
 import IconRenderer from "./../../Utils/IconRenderer";
-import { getOnceSnapshot } from "./../../Firebase/FirebaseActions";
+import { getDataLive } from "./../../Firebase/FirebaseActions";
 import Preload from "./../../Common/PreLoader/Preload";
 import EventSkeleton from "./Skeletons/EventSkeleton";
 import { LinearGradient } from "expo-linear-gradient";
@@ -30,7 +30,7 @@ class Events extends React.Component {
   }
 
   getEventList = () => {
-    getOnceSnapshot("Events").then((snapshot) => {
+    getDataLive("Events").orderByChild('date').on("value",(snapshot) => {
       let pt = snapshot.val();
       if (pt !== null) {
         let newArr = [];
@@ -67,7 +67,7 @@ class Events extends React.Component {
             }
             showsVerticalScrollIndicator={false}
             keyExtractor={(index) => index.id}
-            data={this.state.viewList.reverse()}
+            data={this.state.viewList}
             renderItem={({ item,index }) => {
               return (
                 <View key={index} style={[styles.eventCard, viewUtil.viewCol, cssUtil.shadowXX]}>
@@ -82,7 +82,7 @@ class Events extends React.Component {
                           <View style={{ justifyContent: "flex-end" }}>
                             <IconRenderer iconFamily='FontAwesome5' iconName='calendar-alt' size={15} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#17c0eb' wrpRaised={false} wrpSpace={5} wrpHeight={30} wrpWidth={30} />
                           </View>
-                          <TextLabel style={[{ color: "#ffffff", paddingHorizontal: 5, paddingBottom: 10, paddingTop: 20 }]}>{item.date}</TextLabel>
+                          <TextLabel style={[{ color: "#ffffff", paddingHorizontal: 5, paddingBottom: 10, paddingTop: 20 }]}>{new Date(Number(item.date)).toDateString()}</TextLabel>
                         </View>
                       </LinearGradient>
                     </View>

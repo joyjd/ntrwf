@@ -80,7 +80,7 @@ class MarketPostScreen extends React.Component {
       ItemId: this.context.userDetails.UserId + "_mrkt_" + loc_timeStamp,
       ItemType: this.postMarketForm["ItemType"],
       ItemName: this.postMarketForm["ItemName"],
-      ItemPostDate: loc_Date,
+      ItemPostDate: loc_timeStamp,
       ItemPrice: this.postMarketForm["ItemPrice"],
       ItemUnit: this.postMarketForm["ItemUnit"],
       ItemLocation: this.postMarketForm["ItemLocation"],
@@ -96,7 +96,9 @@ class MarketPostScreen extends React.Component {
           {
             isLoading: false,
           },
-          () => this.props.viewChange()
+          () => {
+            this.props.viewChange();
+          }
         );
       })
       .catch((err) => {
@@ -108,7 +110,7 @@ class MarketPostScreen extends React.Component {
         };
       });
   };
-
+ 
   getPreviousSection = (prevScreen, currentScreen) => {
     this.setState({
       activeState: prevScreen,

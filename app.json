@@ -22,6 +22,7 @@
       "enableDangerousExperimentalLeanBuilds": true
     },
     "android": {
+      "useNextNotificationsApi": true,
       "package": "com.ntrwf.ntrwfbuddy",
       "versionCode": 5
     }

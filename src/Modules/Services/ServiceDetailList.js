@@ -5,7 +5,7 @@ const { width, height } = Dimensions.get("window");
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 import { Icon } from "react-native-elements";
 
-import { getDataByIndex } from "./../../Firebase/FirebaseActions";
+import { getDataByIndex,getOnceSnapshot } from "./../../Firebase/FirebaseActions";
 import IconRenderer from "./../../Utils/IconRenderer";
 import Preload from "./../../Common/PreLoader/Preload";
 import pageSkeleton from "./Skeletons/ServiceProviderListSkeleton";
@@ -13,6 +13,7 @@ import pageSkeleton from "./Skeletons/ServiceProviderListSkeleton";
 import SearchBox from "./../../Common/SearchBox/SearchBox";
 import MsgWrapper from "./../../Utils/MsgWrapper";
 import DataContext from "./../../Context/DataContext";
+import CertificateRibbon from "./../../Utils/CertificateRibbon";
 
 class ServiceDetailList extends React.Component {
   static contextType = DataContext;
@@ -23,13 +24,44 @@ class ServiceDetailList extends React.Component {
       totalServices: [],
       viewList: [],
       blankMessage: "No provider found.",
+      iconName:"",
+      iconFamily:""
     };
   }
 
   componentDidMount() {
     this.props.navigation.setOptions({ title: this.props.route.params.srvName });
+    if(this.props.route.params.icon.iconName === ""){
+      if(Object.keys(this.context.iconList).length === 0){
+         this.getIconList();
+      }else{
+        
+        this.setState({
+          iconName:this.context.iconList[this.props.route.params.srvId].icon,
+          iconFamily:this.context.iconList[this.props.route.params.srvId].iconFamily
+         })
+      }
+    }else{
+         this.setState({
+          iconName:this.props.route.params.icon.iconName,
+          iconFamily:this.props.route.params.icon.iconFamily
+         })
+    }
     this.getServiceProviderList();
   }
+
+   getIconList =  () => {
+    getOnceSnapshot("IconCatalogue")
+      .then((snap) => {
+        let icon = snap.val();
+        this.context.updateIconList(icon);
+        this.setState({
+          iconName:this.context.iconList[this.props.route.params.srvId].icon,
+          iconFamily:this.context.iconList[this.props.route.params.srvId].iconFamily
+         })
+      })
+      .catch((er) => {});
+  };
 
   getServiceProviderList = () => {
     getDataByIndex("UserServices", "ServiceTypeId", this.props.route.params.srvId).then((snapshot) => {
@@ -79,13 +111,13 @@ class ServiceDetailList extends React.Component {
             renderItem={({ item, index }) => {
               return (
                 <View style={[styles.genreCard, viewUtil.viewCol, cssUtil.shadowXX]}>
+                  <CertificateRibbon verify={item.ServiceVerified} date={item.ServicePostTime}/>
                   <View style={[viewUtil.viewRow, { paddingHorizontal: 10, paddingVertical: 5 }]}>
                     <View style={styles.iconPicHolder}>
-                      <IconRenderer iconFamily={this.props.route.params.icon.iconFamily} iconName={this.props.route.params.icon.iconName} size={35} color='#e67e22' style={cssUtil.iconShadow} />
+                      <IconRenderer iconFamily={this.state.iconFamily} iconName={this.state.iconName} size={35} color='#e67e22' style={cssUtil.iconShadow} />
                     </View>
                     <View style={[viewUtil.viewCol, viewUtil.textWrapperVw]}>
                       <TextLabel style={[textUtil.fontBold, { fontSize: 17 }, textUtil.capitalize]}>{item.ServiceName.toLowerCase()} </TextLabel>
-                      <TextLabel style={[{ marginTop: -5 }]}>{new Date(Number(item.ServicePostTime)).toDateString()}</TextLabel>
                       <View style={[viewUtil.viewRow, { marginTop: 7 }]}>
                         <IconRenderer iconFamily='FontAwesome5' iconName='user-alt' size={16} color='#17c0eb' />
                         <TextLabel style={[{ marginLeft: 5 }, textUtil.capitalize]}>{item.ServiceProviderName}</TextLabel>
@@ -188,6 +220,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginHorizontal: 10,
     marginBottom: 15,
+    paddingTop: 5,
   },
   iconPicHolder: {
     backgroundColor: "#f1c40f",

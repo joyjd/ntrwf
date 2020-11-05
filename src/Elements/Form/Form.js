@@ -16,7 +16,7 @@ const getInitialState = (fieldKeys) => {
   return state;
 };
 
-const Form = ({ fields, buttonText, action, afterSubmit, btnType, theme, buttonOrientation, btnLeft, btnLeftEnable }) => {
+const Form = ({ fields, buttonText, action, afterSubmit, btnType, theme, buttonOrientation, btnLeft, btnLeftEnable ,externalChild }) => {
   const fieldKeys = Object.keys(fields);
   const [values, setValues] = useState(getInitialState(fieldKeys));
   const [errorMessage, setErrorMessage] = useState("");
@@ -61,6 +61,11 @@ const Form = ({ fields, buttonText, action, afterSubmit, btnType, theme, buttonO
       {fieldKeys.map((key) => {
         return <Field key={key} theme={theme} fieldName={key} field={fields[key]} error={validationErrors[key]} onChangeText={onChangeValue} value={values[key]} />;
       })}
+      {externalChild !== undefined?
+      <>
+      {externalChild}
+      </>
+      :null}
       <View style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
         {btnLeftEnable ? (
           <View style={[buttonOrientation === "right" ? styles.left : styles.right]}>

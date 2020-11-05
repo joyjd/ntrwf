@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import { StyleSheet, View, Image, Dimensions, ActivityIndicator } from "react-native";
 import TextLabel from "../../Elements/TextLabel/TextLabel";
 
 import { viewUtil, textUtil } from "../../Styles/GenericStyles";
-import { getLatestElement } from "./../../Firebase/FirebaseActions";
+import { getLatestElement,getDataLive } from "./../../Firebase/FirebaseActions";
 import Photoslider from "./../../Utils/PhotoSlider";
 import ReadMore from "../../Elements/Button/ReadMore";
+import DataContext from "./../../Context/DataContext";
 
+const sendNotification = (message)=>{
+  console.log("inside sendNotification");
+  fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
 const EventTeaser = ({ navigation }) => {
   const [event, setEvent] = useState([]);
   const [isReady, setIsReady] = useState(false);
+  const {pushNotificationToken} = useContext(DataContext);
 
   useEffect(() => {
-    getLatestElement("Events").then((snapshot) => {
+    getDataLive("Events").orderByChild('date').limitToLast(1).on("value", (snapshot) => {
       let pt = snapshot.val();
       if (pt !== null) {
         let newArr = [];
@@ -20,14 +34,44 @@ const EventTeaser = ({ navigation }) => {
           newArr.push(pt[key]);
         });
         //newArr = newArr.concat(newArr);
-        setEvent(newArr);
+        setEvent(newArr.reverse());
         setIsReady(true);
+
+        
       } else {
         setEvent([]);
         setIsReady(true);
       }
     });
+
+    //send push
+    getDataLive("Events").startAt(new Date().getTime()).orderByChild('date').limitToLast(1).on("value",(snapshot)=>{
+      let ptNot = snapshot.val();
+     if(ptNot !== null) {
+        let notNotArr = [];
+        Object.keys(ptNot).map((key) => {
+          notNotArr.push(ptNot[key]);
+        });
+      //send notification
+      if(notNotArr.length !== 0) {
+        let pushEventMessage = {
+            to: pushNotificationToken,
+            sound: 'default',
+            title: "NTRWF - New Event announced!",
+            body: notNotArr[0].name.toLowerCase(),
+            data: { 
+              navigationLink: "Events",
+            },
+        };
+        if(pushEventMessage.to !== null){
+          sendNotification(pushEventMessage); 
+        }
+      }
+    }
   });
+  },[pushNotificationToken]);
+
+
 
   return (
     <>
@@ -44,7 +88,7 @@ const EventTeaser = ({ navigation }) => {
               <TextLabel numberOfLines={2} style={[textUtil.fontBold]}>
                 {event[0].name}
               </TextLabel>
-              <TextLabel style={[textUtil.passiveText]}>{event[0].date}</TextLabel>
+              <TextLabel style={[textUtil.passiveText]}>{new Date(Number(event[0].date)).toDateString()}</TextLabel>
             </View>
             <View style={{ justifyContent: "flex-end", alignItems: "flex-end" }}>
               <ReadMore onPressMethod={() => navigation.navigate("Events")} />

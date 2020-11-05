@@ -46,9 +46,14 @@ class ForumScreen extends React.Component {
           viewList: newArr,
           isReady: true,
         });
+
+
+       
       }
     });
   };
+
+
   render() {
     return (
       <View style={viewUtil.viewPageWrapper}>
@@ -90,7 +95,7 @@ class ForumScreen extends React.Component {
                   <TextLabel style={[textUtil.passiveText]}>Started On</TextLabel>
                   <View style={[viewUtil.viewRow, { marginTop: 2, alignItems: "center" }]}>
                     <IconRenderer iconFamily='Fontisto' iconName='date' size={18} color='#17c0eb' />
-                    <TextLabel style={[{ paddingLeft: 5 }]}>{item.DiscDate}</TextLabel>
+                    <TextLabel style={[{ paddingLeft: 5 }]}>{new Date(Number(item.DiscDate)).toDateString()}</TextLabel>
                   </View>
                 </View>
                 <View style={[{ marginVertical: 5, marginHorizontal: 15 }]}>

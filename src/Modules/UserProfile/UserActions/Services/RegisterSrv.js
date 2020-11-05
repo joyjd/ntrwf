@@ -15,11 +15,14 @@ import Loader from "./../../../../Utils/Loader";
 
 import SrvCategoryPicker from "./SrvCategoryPicker";
 import PhoneOTPVerifier from "./../../../../Utils/PhoneOTPVerifier";
+import UploadDoc from "./UploadDoc";
+import {DocUploader} from "./../../../../Utils/DocUploader";
 
 class RegisterSrv extends React.Component {
   static contextType = DataContext;
   registerServiceForm = {
     ServiceType: "",
+    ServiceDocUri:""
   };
   constructor(props) {
     super(props);
@@ -27,12 +30,14 @@ class RegisterSrv extends React.Component {
       pickerError: false,
       isLoading: false,
 
+      docError:false,
+
       otpViewer:false,
       sendCode:false,
       phoneVerified:false,
     };
   }
-
+  
   getValidatedValues = (Title, Email, Phone, Address) => {
     this.registerServiceForm["Title"] = Title;
     this.registerServiceForm["Email"] = Email;
@@ -43,27 +48,38 @@ class RegisterSrv extends React.Component {
       this.setState({
         pickerError: true,
       });
+    }else{
+      if(this.state.pickerError){
+        this.setState({
+          pickerError: false,
+        });
+      }
+    }
+    if(this.registerServiceForm["ServiceDocUri"] === ""){
+      this.setState({
+        docError: true,
+      });
+    }else{
+      if(this.state.docError){
+        this.setState({
+          docError: false,
+        });
+      }
     }
     return this.registerServiceForm;
   };
   submitServiceValues = () => {
-    console.log(this.registerServiceForm["Phone"])
     if(this.registerServiceForm["Phone"] === this.context.userDetails.Phone || this.state.phoneVerified){
-      if (this.registerServiceForm["ServiceType"] !== "") {
-        if (!this.state.pickerError) {
-          this.setState({
-            pickerError: false,
-            isLoading: true,
-          });
-        } else {
-          this.setState({
-            isLoading: true,
-          });
-        }
+      if (this.registerServiceForm["ServiceType"] !== "" && this.registerServiceForm["ServiceDocUri"] !== "") {
+        this.setState({
+          isLoading: true,
+        });
   
         let loc_timeStamp = new Date().getTime();
         let loc_Date = new Date().toDateString();
-  
+        
+        DocUploader(this.registerServiceForm["ServiceDocUri"],"services/validationDocs/"+this.context.userDetails.UserId + "_srv_" + loc_timeStamp);
+
         setData("UserServices/" + this.context.userDetails.UserId + "_srv_" + loc_timeStamp, {
           ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
           ServiceTypeId: this.registerServiceForm["ServiceType"],
@@ -76,8 +92,10 @@ class RegisterSrv extends React.Component {
           ServicePostTime: loc_timeStamp,
           ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
           ServiceParentName: this.registerServiceForm["ServiceParentName"],
+          ServiceVerified:false
         })
           .then((data) => {
+            
             this.context.updateUserServices([
               {
                 ServiceId: this.context.userDetails.UserId + "_srv_" + loc_timeStamp,
@@ -91,6 +109,7 @@ class RegisterSrv extends React.Component {
                 ServicePostTime: loc_timeStamp,
                 ServiceTypeName: this.registerServiceForm["ServiceTypeName"],
                 ServiceParentName: this.registerServiceForm["ServiceParentName"],
+                ServiceVerified:false
               },
             ]);
             this.setState(
@@ -157,6 +176,15 @@ class RegisterSrv extends React.Component {
             }}
           />
           <EditForm
+            externalChild ={<UploadDoc showError={this.state.docError} 
+            getDocDetails = {(data)=> {
+              this.registerServiceForm["ServiceDocUri"] = data;
+              if(this.state.docError){
+                this.setState({
+                  docError: false,
+                });
+              }
+          }}/>}
             action={this.getValidatedValues}
             afterSubmit={this.submitServiceValues}
             buttonText='Register Service'
@@ -211,6 +239,7 @@ class RegisterSrv extends React.Component {
               },
             }}
           />
+          
           </View>
         </View>
       </ScrollView>
