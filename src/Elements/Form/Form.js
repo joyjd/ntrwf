@@ -37,7 +37,7 @@ const Form = ({ fields, buttonText, action, afterSubmit, btnType, theme, buttonO
   };
 
   const submit = async () => {
-    console.log("pressed");
+    
     setErrorMessage("");
     setValidationErrors(getInitialState(fieldKeys));
 
@@ -50,7 +50,7 @@ const Form = ({ fields, buttonText, action, afterSubmit, btnType, theme, buttonO
       const result = await action(...getValues());
       await afterSubmit(result);
     } catch (e) {
-      console.log("in catch");
+     
       setErrorMessage(e.message);
       Alert.alert("Internal Server error !", "Please contact app administrator.More Details - " + e.message);
     }

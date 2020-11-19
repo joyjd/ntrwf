@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "589176274798",
+    "firebase_url": "https://ntrwf-2ad85.firebaseio.com",
+    "project_id": "ntrwf-2ad85",
+    "storage_bucket": "ntrwf-2ad85.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:589176274798:android:4d377e24b5ac61b6258b7f",
+        "android_client_info": {
+          "package_name": "com.ntrwf.ntrwfbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "589176274798-05vi2t505j20l5ielmhf5d6mvvd73m14.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvKT9qKD3SATGOYhgMOTCKk5Ci8YC1Hww"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "589176274798-05vi2t505j20l5ielmhf5d6mvvd73m14.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

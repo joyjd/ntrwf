@@ -75,7 +75,6 @@ class RegisterUserScreen extends React.Component {
 
   getNextScreen = (dataObj, nextSection) => {
     this.registerFormObj = { ...this.registerFormObj, ...dataObj };
-    console.log({ ...this.registerFormObj });
     if (nextSection === "phoneSec") {
       this.setState({
         activeState: nextSection,

@@ -71,7 +71,6 @@ class ProfileEdit extends React.Component {
       updates["Address"] = this.editFormValues.Address;
     }
 
-    console.log("updates", updates);
     if (Object.keys(updates).length !== 0) {
       this.updateLoaderMessage("Updating Personal Details ..");
       this.setState({
@@ -116,7 +115,6 @@ class ProfileEdit extends React.Component {
             Promise.all(promises)
               .then((res) => {
                 this.updateLoaderMessage("Updating Personal attributes ..");
-                console.log("line 105", res);
                 let resultArr = {};
                 if (nameUpdateFlag || phoneUpdateFlag) {
                   resultArr["U_srv_prm"] = res[0];
@@ -132,7 +130,6 @@ class ProfileEdit extends React.Component {
                 // get results of all promises
                 if (resultArr["U_srv_prm"]) {
                   let pt = resultArr["U_srv_prm"].val();
-                  console.log(resultArr["U_srv_prm"].val());
                   if (pt != null) {
                     let idArr = Object.keys(pt);
 
@@ -149,7 +146,6 @@ class ProfileEdit extends React.Component {
 
                 if (resultArr["U_msg_send"]) {
                   let pt = resultArr["U_msg_send"].val();
-                  console.log(resultArr["U_msg_send"].val());
                   if (pt != null) {
                     let idArr = Object.keys(pt);
 
@@ -163,7 +159,6 @@ class ProfileEdit extends React.Component {
 
                 if (resultArr["U_mrkt_prm"]) {
                   let pt = resultArr["U_mrkt_prm"].val();
-                  console.log(resultArr["U_mrkt_prm"].val());
                   if (pt != null) {
                     let idArr = Object.keys(pt);
 
@@ -177,8 +172,7 @@ class ProfileEdit extends React.Component {
 
                 if (resultArr["U_msg_rcv"]) {
                   let pt = resultArr["U_msg_rcv"].val();
-                  console.log(resultArr["U_msg_rcv"].val());
-                  if (pt != null) {
+                 if (pt != null) {
                     let idArr = Object.keys(pt);
 
                     idArr.forEach((id) => {
@@ -190,7 +184,6 @@ class ProfileEdit extends React.Component {
                 }
                 if (resultArr["U_frm_disc"]) {
                   let pt = resultArr["U_frm_disc"].val();
-                  console.log(resultArr["U_frm_disc"].val());
                   if (pt != null) {
                     let idArr = Object.keys(pt);
 
@@ -203,7 +196,6 @@ class ProfileEdit extends React.Component {
                 }
                 if (resultArr["U_frm_discCom"]) {
                   let pt = resultArr["U_frm_discCom"].val();
-                  console.log(resultArr["U_frm_discCom"].val());
                   if (pt != null) {
                     let idArr = Object.keys(pt);
 

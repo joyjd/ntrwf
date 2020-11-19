@@ -9,7 +9,7 @@ import ReadMore from "../../Elements/Button/ReadMore";
 import DataContext from "./../../Context/DataContext";
 
 const sendNotification = (message)=>{
-  console.log("inside sendNotification");
+ 
   fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {

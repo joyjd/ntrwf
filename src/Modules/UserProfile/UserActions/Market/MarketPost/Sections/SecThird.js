@@ -36,7 +36,7 @@ class SecThird extends React.Component {
           {
             imgPreview: result.uri,
           },
-          () => console.log(this.state.imgPreview)
+          () => {}
         );
       }
       if (result.cancelled) {
@@ -44,12 +44,12 @@ class SecThird extends React.Component {
           loading: false,
         });
       }
-      console.log(result);
+     
     } catch (E) {
       this.setState({
         loading: false,
       });
-      console.log(E);
+      
     }
   };
   transmitFormVal = (obj) => {

@@ -83,7 +83,6 @@ class LoginScreen extends React.Component {
         );
       })
       .catch((data) => {
-        console.log(data);
         this.setState(
           {
             loading: false,

@@ -6,8 +6,8 @@
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "splash": {
-      "image": "./assets/logo.png",
-      "resizeMode": "contain",
+      "image": "./assets/splash_app.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "updates": {
@@ -23,8 +23,9 @@
     },
     "android": {
       "useNextNotificationsApi": true,
+      "googleServicesFile": "./google-services.json",
       "package": "com.ntrwf.ntrwfbuddy",
-      "versionCode": 5
+      "versionCode": 8
     }
   }
 }

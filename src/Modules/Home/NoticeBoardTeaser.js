@@ -28,8 +28,7 @@ class NoticeBoardTeaser extends React.Component {
 
   
   sendNotification = (message)=>{
-    console.log("inside sendNotification");
-    fetch('https://exp.host/--/api/v2/push/send', {
+     fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -42,7 +41,6 @@ class NoticeBoardTeaser extends React.Component {
   registerForServiceAdd = ()=>{
     let srvPromise = getDataLive("UserServices").startAt(new Date().getTime()).orderByChild('ServicePostTime').limitToLast(1);
     srvPromise.on("child_added", (snapshot) => {
-      console.log("inside child aded ===========")
       let pt = snapshot.val();
       let srvArr = [];
       if (pt !== null) {

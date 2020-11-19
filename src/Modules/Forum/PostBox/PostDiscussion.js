@@ -12,7 +12,6 @@ const PostDiscussion = ({ visibility, closeMsgBox }) => {
   const getValidatedValues = (DiscDesc, DiscTitle) => {
     discFormValues["DiscTitle"] = DiscTitle;
     discFormValues["DiscDesc"] = DiscDesc;
-    console.log("form values", discFormValues);
     return discFormValues;
   };
   const transmitFormVal = (obj) => {

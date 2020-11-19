@@ -62,12 +62,11 @@ class PhotoUploader extends React.Component {
         });
       }
 
-      console.log(result);
     } catch (E) {
       this.setState({
         loading: false,
       });
-      console.log(E);
+      
     }
   };
 

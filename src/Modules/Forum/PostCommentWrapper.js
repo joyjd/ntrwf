@@ -36,7 +36,7 @@ class PostCommentWrapper extends React.Component {
     let timestamp = new Date().getTime();
     let dateStr = new Date().toDateString();
 
-    setData("ForumComments/" + "DCom_" + timestamp, {
+    setData("ForumComments/"+this.props.DComDiscId+"/" + "DCom_" + timestamp, {
       DComId: "DCom_" + timestamp,
       DComBody: data.DComBody,
       DComOwnerId: this.context.userDetails.UserId,

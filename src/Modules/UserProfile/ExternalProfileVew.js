@@ -17,7 +17,6 @@ class ExternalProfileView extends React.Component {
   }
   closeMsgBox = (data) => {};
   render() {
-    console.log("img", this.props.route.params.userPic);
     return (
       <View style={[viewUtil.viewPageWrapper]}>
         <View style={[styles.topBg, cssUtil.shadowXX]}>

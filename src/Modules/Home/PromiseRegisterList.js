@@ -4,6 +4,7 @@ import { AppState } from "react-native";
 import DataContext from "./../../Context/DataContext";
 import { getLocalstorageObject,setLocalstorageObject } from "./../../AyncStorage/LocalAsyncStorage";
 import { getDataByIndexLive,getOnceSnapshotOrderByStartAt,getDataLive } from "./../../Firebase/FirebaseActions";
+import { SoundPlayer } from "./../../Utils/SoundPlayer";
 
 class PromiseRegisterList extends React.Component{
     static contextType = DataContext;
@@ -15,6 +16,9 @@ class PromiseRegisterList extends React.Component{
 
     createRcvdMsgNotPushNotFlag = false;
     createSentMsgNotFlag = false;
+    createServiceNotificationFlag= false;
+    registerForForumChangesFlag = false;
+    registerForMarketChangesFlag = false;
 
     pushMsgNotificationMessage = {
         to: null,
@@ -33,11 +37,7 @@ class PromiseRegisterList extends React.Component{
     componentDidMount(){
         this.changeUserStatus();
         AppState.addEventListener('change', this._handleAppStateChange);
-        getLocalstorageObject("NTRWF_LastUsage").then((data) => {
-           this.createServiceNotification(data.DateTime);
-           this.registerForForumChanges(data.DateTime);
-           this.registerForMarketChanges(data.DateTime);
-        });
+        
     }
    componentDidUpdate(){
     
@@ -48,6 +48,27 @@ class PromiseRegisterList extends React.Component{
         if(!this.createSentMsgNotFlag){
          this.createSentMsgNot()
         }
+
+        getLocalstorageObject("NTRWF_LastUsage").then((data) => {
+          let timestmp;
+          if(data !== null){
+            timestmp = data.DateTime;
+          }else{
+            timestmp = null;
+          }
+          if(!this.createServiceNotificationFlag){
+            this.createServiceNotification(timestmp);
+          }
+          if(!this.registerForForumChangesFlag){
+            this.registerForForumChanges(timestmp);
+          }
+          if(!this.registerForMarketChangesFlag){
+            this.registerForMarketChanges(timestmp);
+          }
+          
+          
+          
+       });
         
     } else if(!this.context.userLogged){
         if(this.createRcvdMsgNotPushNotFlag || this.createSentMsgNotFlag){
@@ -60,7 +81,6 @@ class PromiseRegisterList extends React.Component{
     }
    }
    componentWillUnmount(){
-       console.log("Promise Registe unmounted");
        
        this.unhookPromise(this.rcvMailPromise);
        this.unhookPromise(this.sentMailPromise);
@@ -74,10 +94,14 @@ class PromiseRegisterList extends React.Component{
                  //in back
                  if(this.context.notificationTouched){
                     let timeStamp = new Date().getTime();
-            
+                   
                     this.unhookPromise(this.servicePromise);
                     this.unhookPromise(this.forumPushNot);
                     this.unhookPromise(this.marketPushNot);
+                    this.context.updateMarketNews([]);
+                    this.context.updateMarketCount(0);
+                    this.context.updateForumNews([]);
+                    this.context.updateForumCount(0);
 
                     this.createServiceNotification(timeStamp);
                     this.registerForForumChanges(timeStamp);
@@ -119,7 +143,11 @@ class PromiseRegisterList extends React.Component{
           });
           this.context.updateReceivedMessages(newArr.reverse());
           this.context.updateMsgCount(notfCount);
+          if(notfCount !== 0){
+            SoundPlayer();
+          }
           
+          try{
           //send msg notification
             let tempMsgvArr = newArr;
             let temp = tempMsgvArr[0].SenderName.toUpperCase() +' sent a message to you.';
@@ -136,6 +164,10 @@ class PromiseRegisterList extends React.Component{
                 }
                }
             } 
+
+          }catch(er){
+              alert(er.message);
+           }
         }
     });
    }
@@ -156,6 +188,7 @@ class PromiseRegisterList extends React.Component{
    }
 
    createServiceNotification = (lastUsage)=>{
+        this.createServiceNotificationFlag= true;
         let lastActiveTime;
         
         if(lastUsage !== null){
@@ -173,7 +206,10 @@ class PromiseRegisterList extends React.Component{
             Object.keys(pt).map((key) => {
               srvArr.push(pt[key]);
             });
-           
+            if(srvArr.length!== 0){
+             SoundPlayer();
+            }
+            
           }
           this.context.updateNewServices(srvArr);
           this.context.updateSrvCount(srvArr.length);
@@ -184,6 +220,7 @@ class PromiseRegisterList extends React.Component{
    }
 
    registerForForumChanges = (lastUsage)=>{
+    this.registerForForumChangesFlag = true;
     let lastActiveTime;
         
     if(lastUsage !== null){
@@ -191,39 +228,48 @@ class PromiseRegisterList extends React.Component{
     }else{
       lastActiveTime = new Date().getTime();
     }
-    this.forumPushNot =getOnceSnapshotOrderByStartAt("Forum","DiscDate",lastActiveTime); //getDataLive("Forum").startAt(lastActiveTime).orderByChild('DiscDate');
-    this.forumPushNot.on("value",(snapshot)=>{
+    this.forumPushNot =getDataLive("Forum").startAt(lastActiveTime).orderByChild('DiscDate'); //getOnceSnapshotOrderByStartAt("Forum","DiscDate",lastActiveTime); //getDataLive("Forum").startAt(lastActiveTime).orderByChild('DiscDate');
+    this.forumPushNot.on("child_added",(snapshot)=>{
       let forumNot = snapshot.val();
       let forumNotArr = [];
       if(forumNot !== null) {
         
-        Object.keys(forumNot).map((key) => {
+        forumNotArr.push(forumNot);
+        /* Object.keys(forumNot).map((key) => {
           forumNotArr.push(forumNot[key]);
-        });
-
-        
-
-        let pushforumMessage = {
-            to: this.context.pushNotificationToken,
-            sound: 'default',
-            title: "NTRWF - "+forumNotArr[0].DiscOwnerName.toUpperCase()+" started a new discussion.",
-            body: forumNotArr[0].DiscTitle.toLowerCase(),
-            data: { 
-              navigationLink: "Forum",
-             },
-        };
-        if(pushforumMessage.to !== null){
-          this.sendNotification(pushforumMessage); 
+        }); */
+        this.context.updateForumNews(forumNotArr);
+        this.context.updateForumCount(forumNotArr.length);
+        if(forumNotArr.length !== 0){
+          SoundPlayer();
         }
+        
+      try{ 
+            let pushforumMessage = {
+              to: this.context.pushNotificationToken,
+              sound: 'default',
+              title: "NTRWF - "+forumNotArr[0].DiscOwnerName.toUpperCase()+" started a new discussion.",
+              body: forumNotArr[0].DiscTitle.toLowerCase(),
+              data: { 
+                navigationLink: "Forum",
+              },
+          };
+          if(pushforumMessage.to !== null){
+            this.sendNotification(pushforumMessage); 
+          }
+       }catch(er){
+          alert(er.message);
+       } 
+        
       }
-      this.context.updateForumNews(forumNotArr);
-      this.context.updateForumCount(forumNotArr.length);
+
     });
 
   }
 
 
   registerForMarketChanges = (lastUsage)=>{
+    this.registerForMarketChangesFlag = true;
     let lastActiveTime;
         
     if(lastUsage !== null){
@@ -240,8 +286,15 @@ class PromiseRegisterList extends React.Component{
         Object.keys(marketNot).map((key) => {
           marketNotArr.push(marketNot[key]);
         });
-    
-        let pushMarketMessage = {
+        
+        this.context.updateMarketNews(marketNotArr);
+        this.context.updateMarketCount(marketNotArr.length);
+        if(marketNotArr.length !== 0){
+           SoundPlayer();
+        }
+        
+        try{
+          let pushMarketMessage = {
             to: this.context.pushNotificationToken,
             sound: 'default',
             title: "NTRWF - "+marketNotArr[0].ItemOwnerName.toUpperCase()+" posted a new item for "+marketNotArr[0].ItemType.toUpperCase(),
@@ -253,9 +306,12 @@ class PromiseRegisterList extends React.Component{
         if(pushMarketMessage.to !== null){
           this.sendNotification(pushMarketMessage); 
         }
+        }catch(er){
+          alert(er.message);
+       }
+        
       }
-      this.context.updateMarketNews(marketNotArr);
-      this.context.updateMarketCount(marketNotArr.length);
+      
     });
 
   }
@@ -277,7 +333,10 @@ class PromiseRegisterList extends React.Component{
 
 
   unhookPromise = (ref) =>{
-    ref.off('value');
+    if(ref !== undefined){
+      ref.off('value');
+    }
+    
   }
   
   render(){

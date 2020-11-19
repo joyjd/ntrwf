@@ -14,7 +14,7 @@ class UploadDoc extends React.Component{
     constructor(props){
         super(props);
         this.state={
-            file:""
+            file:{}
         }
     }
 
@@ -22,7 +22,7 @@ class UploadDoc extends React.Component{
         await DocumentPicker.getDocumentAsync({ type: "*/*", copyToCacheDirectory: true }).then(response => {
 
             if (response.type == 'success') {
-          
+             try{
               let { name, size, uri } = response;
               let nameParts = name.split('.');
               let fileType = nameParts[nameParts.length - 1];
@@ -32,13 +32,20 @@ class UploadDoc extends React.Component{
                 uri: uri,
                 type: "application/" + fileType
               };
-              console.log(fileToUpload, '...............file')
+             }catch(E){
+               alert(E.message);
+             }
+              
+             
               this.setState({ 
                   file: fileToUpload
                  },()=> this.props.getDocDetails(this.state.file.uri));
             }
           
           
+          })
+          .catch((er)=>{
+               alert(er.message)
           });
     }
 

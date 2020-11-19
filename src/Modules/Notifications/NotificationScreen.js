@@ -17,7 +17,6 @@ class NotificationScreen extends React.Component {
     
   }
   render() {
-    console.log("notification rendered")
     return (
       <View style={viewUtil.viewPageWrapper}>
         <ScrollView>
@@ -146,7 +145,7 @@ class NotificationScreen extends React.Component {
           <View style={{width:'80%'}}>
             <View style={[{justifyContent:"space-between"},viewUtil.viewRow]}>
              <View style={[viewUtil.viewRow]}>
-               <TextLabel style={[textUtil.passiveText]}>Topic Date : </TextLabel> 
+               
                <View style={[viewUtil.viewRow]}>
                <IconRenderer iconFamily='FontAwesome5' iconName='calendar-alt' size={15} color='#17c0eb' />
                <TextLabel style={[textUtil.passiveText,{paddingLeft:5}]}>{new Date(item.DiscDate).toDateString()}</TextLabel>

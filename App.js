@@ -28,7 +28,7 @@ class App extends React.Component {
     try {
       await SplashScreen.preventAutoHideAsync();
     } catch (e) {
-      console.warn(e);
+     
     }
     this.prepareResources();
     if (!firebase.apps.length) {

@@ -1,17 +1,18 @@
 import React from "react";
-import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking, Alert } from "react-native";
+import { StyleSheet, Dimensions, View, FlatList, TouchableOpacity, Linking, Alert,ToastAndroid } from "react-native";
 import TextLabel from "./../../Elements/TextLabel/TextLabel";
 const { width, height } = Dimensions.get("window");
 import Btn from "./../../Elements/Button/Btn";
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 
 import IconRenderer from "./../../Utils/IconRenderer";
-import { getDataLive } from "./../../Firebase/FirebaseActions";
+import { getDataLive,deleteData } from "./../../Firebase/FirebaseActions";
 import Preload from "./../../Common/PreLoader/Preload";
 import { ScrollView } from "react-native-gesture-handler";
 import PostDiscussionWrapper from "./PostDiscussionWrapper";
 import SearchBox from "./../../Common/SearchBox/SearchBox";
 import DataContext from "./../../Context/DataContext";
+import TransparentBtn from "./../../Elements/Button/TransparentBtn";
 
 class ForumScreen extends React.Component {
   static contextType = DataContext;
@@ -49,10 +50,53 @@ class ForumScreen extends React.Component {
 
 
        
+      }else{
+        this.setState({
+          discussionList: [],
+          viewList: [],
+          isReady: true,
+        });
       }
     });
   };
 
+
+  selectDeleteFunc = (id) => {
+    Alert.alert(
+      "Delete Post",
+      "Are you sure you want to delete this post?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => this.setState({
+            isReady: false,
+          },()=>this.submitDeletePost(id)),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+  submitDeletePost = (id) => {
+    
+    deleteData("Forum/" + id).then((data) => {
+     deleteData("ForumComments/" + id);
+      this.setState({
+        isReady: true,
+      },()=>
+      ToastAndroid.showWithGravity(
+        "Your post has been deleted !",
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER,
+        
+      )
+      );
+    });
+  };
 
   render() {
     return (
@@ -77,7 +121,17 @@ class ForumScreen extends React.Component {
           data={this.state.viewList.reverse()}
           renderItem={({ item, index }) => {
             return (
+              <>
+              {this.context.userDetails.UserId === item.DiscOwnerId? 
+                <View style={[{alignItems:'flex-end'}]}>
+                  <TouchableOpacity onPress={() => this.selectDeleteFunc(item.DiscId)} style={[viewUtil.viewRow,{marginRight:10,justifyContent:'center',alignItems:'center', paddingHorizontal:10,paddingVertical:10,backgroundColor:'#ffcccc'}]}> 
+                  <IconRenderer iconFamily='MaterialIcons' iconName='delete-forever' size={20} color='#FF512F' />
+                  <TextLabel>Delete Post</TextLabel>
+                  </TouchableOpacity>
+                 
+                </View>:null}
               <TouchableOpacity key={index} onPress={() => this.props.navigation.navigate("Discussion", { discussionDetails: item })} style={[styles.forumCard, cssUtil.shadowX]}>
+                
                 <View style={[viewUtil.viewRow, styles.paddingH_10, { justifyContent: "center", alignItems: "center" }]}>
                   <IconRenderer iconFamily='MaterialCommunityIcons' iconName='forum' size={25} color='#ffffff' style={cssUtil.iconShadow} wrpStyle='round' wrpColor='#38ada9' wrpRaised={true} wrpSpace={10} wrpHeight={50} wrpWidth={50} />
                   <View style={[viewUtil.textWrapperVw]}>
@@ -116,6 +170,7 @@ class ForumScreen extends React.Component {
                   </TouchableOpacity>
                 </View>
               </TouchableOpacity>
+              </>
             );
           }}
         />
@@ -146,8 +201,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderRadius: 10,
     marginBottom: 10,
-    marginTop: 10,
-    marginHorizontal: 10,
+    
+    marginHorizontal: 5,
     paddingTop: 5,
   },
 });

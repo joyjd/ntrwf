@@ -42,7 +42,6 @@ class MarketPostScreen extends React.Component {
 
   getNextScreen = (dataObj, nextScreen) => {
     this.postMarketForm = { ...this.postMarketForm, ...dataObj };
-    console.log(this.postMarketForm);
     if (nextScreen !== "") {
       this.setState({
         activeState: nextScreen,

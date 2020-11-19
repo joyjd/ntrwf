@@ -6,7 +6,7 @@ import Btn from "./../../Elements/Button/Btn";
 import { viewUtil, cssUtil, textUtil } from "../../Styles/GenericStyles";
 
 import IconRenderer from "./../../Utils/IconRenderer";
-import { getDataByIndex } from "./../../Firebase/FirebaseActions";
+import { getDataByIndex,getDataLive,getOnceSnapshot } from "./../../Firebase/FirebaseActions";
 import Preload from "./../../Common/PreLoader/Preload";
 import { ScrollView } from "react-native-gesture-handler";
 import { Divider } from "react-native-elements";
@@ -25,35 +25,35 @@ class ForumThread extends React.Component {
   componentDidMount() {
     this.getCommentList();
   }
+  componentDidUpdate(){
+    
+  }
 
   getCommentList = () => {
-    getDataByIndex("ForumComments", "DComDiscId", this.props.route.params.discussionDetails.DiscId)
-      .then((snapshot) => {
+   // getDataByIndex("ForumComments", "DComDiscId", this.props.route.params.discussionDetails.DiscId)
+   // getDataLive("ForumComments/"+this.props.route.params.discussionDetails.DiscId)
+   // .on("value", (snapshot) => {
+    getOnceSnapshot("ForumComments/"+this.props.route.params.discussionDetails.DiscId)
+    .then((snapshot) => {
         let pt = snapshot.val();
         if (pt !== null) {
           let newArr = [];
           Object.keys(pt).map((key) => {
             newArr.push(pt[key]);
           });
-          // console.log(newArr);
+          
           this.setState({
             comments: newArr,
             isReady: true,
           });
         } else {
           this.setState({
+            comments: [],
             isReady: true,
           });
         }
-      })
-      .catch((er) => {
-        this.setState(
-          {
-            isReady: true,
-          },
-          () => Alert.alert("Services could not be fetched !", er.message)
-        );
       });
+      
   };
 
   render() {

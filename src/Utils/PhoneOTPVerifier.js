@@ -49,17 +49,14 @@ class PhoneOTPVerifier extends React.Component{
             this.props.phone,
             this.recaptchaVerifier.current
           );
-          console.log(this.props.phone+","+verificationId);
-      
-
+          
           this.setState({
             verificationId:verificationId,
             showSubmitCode:true
           })
           
         } catch (err) {
-          console.log(err)
-         this.props.verificationDone('fail');
+          this.props.verificationDone('fail');
         }
       }
 
@@ -131,8 +128,7 @@ class PhoneOTPVerifier extends React.Component{
           this.state.verificationId,
           this.state.otpArray.concat().join('')
         );
-        console.log("Credentials",credential);
-        await firebase.auth().signInWithCredential(credential);
+         await firebase.auth().signInWithCredential(credential);
         ToastAndroid.showWithGravity("Phone number has been authenticated successfully 👍", ToastAndroid.LONG, ToastAndroid.CENTER);
        
         //unlink the phone number
@@ -141,7 +137,6 @@ class PhoneOTPVerifier extends React.Component{
         await firebase.auth().currentUser.delete();
         this.props.verificationDone('success');
       } catch (err) {
-        console.log(err)
         this.props.verificationDone('fail');
       }
     }

@@ -20,7 +20,6 @@ class MsgWrapper extends React.Component {
   };
 
   closeMsgBox = (data) => {
-    console.log("close called");
     this.setState({ visibility: false });
 
     if (data !== "") {
@@ -29,7 +28,6 @@ class MsgWrapper extends React.Component {
   };
 
   submitMessage = (data) => {
-    console.log("inside submit", this.props.receiverDetails);
     let timestamp = new Date().getTime();
     let dateStr = new Date().toDateString();
 

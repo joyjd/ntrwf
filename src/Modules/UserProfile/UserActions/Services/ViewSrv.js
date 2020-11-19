@@ -61,8 +61,7 @@ class ViewSrv extends React.Component {
           Object.keys(pt).map((key) => {
             newArr.push(pt[key]);
           });
-          // console.log(newArr);
-          this.context.updateUserServices(newArr.reverse());
+         this.context.updateUserServices(newArr.reverse());
           this.setState({
             isReady: true,
           });
@@ -88,7 +87,7 @@ class ViewSrv extends React.Component {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
+          onPress: () => {},
           style: "cancel",
         },
         {
@@ -128,7 +127,6 @@ class ViewSrv extends React.Component {
   };
 
   submitEditServiceValues = () => {
-    console.log(this.editServiceValues["ServiceProviderPhone"])
     if(this.editServiceValues["ServiceProviderPhone"] === this.context.userDetails.Phone || this.state.phoneVerified){
     this.setState({
       isLoading: true,

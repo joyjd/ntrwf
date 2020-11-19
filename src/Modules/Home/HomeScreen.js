@@ -27,7 +27,6 @@ class HomeScreen extends React.Component {
   }
 
   componentWillUnmount(){
-    console.log("unmount executed..")
     setLocalstorageObject("NTRWF_LastUsage", {
       DateTime: new Date().getTime()
     });

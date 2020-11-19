@@ -57,7 +57,6 @@ const EditForm = ({ fields, buttonText, action, afterSubmit, btnType, theme, but
       const result = await action(...getValues());
       await afterSubmit(result);
     } catch (e) {
-      console.log("in catch editform");
       setErrorMessage(e.message);
     }
   };
